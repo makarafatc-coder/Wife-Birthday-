@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sporto Live HD - Watch Live Sports</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col select-none">
+
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-circle-play text-red-500 text-xl animate-pulse"></i>
+            <span class="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-500">SPORTO LIVE</span>
+        </div>
+        <div>
+            <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[11px] font-bold uppercase px-2.5 py-1 rounded-full flex items-center gap-1.5 animate-pulse">
+                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> LIVE
+            </span>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-md mx-auto p-3 space-y-4">
+        
+        <div id="player-container" class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800/80 shadow-xl">
+            <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+                
+                <div id="m3u8-player-wrapper" class="w-full h-full">
+                    <video id="sporto-player" class="w-full h-full object-contain" controls autoplay muted playsinline pip="true">
+                        <source src="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8" type="application/x-mpegURL">
+                    </video>
+                </div>
+
+                <div id="social-player-wrapper" class="w-full h-full absolute top-0 left-0 hidden">
+                    <iframe id="social-player" class="w-full h-full object-contain" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+            </div>
+            
+            <div class="p-3.5 bg-slate-900 flex flex-col gap-3">
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <h1 id="current-match-title" class="text-base font-bold text-slate-100 leading-snug">Real Madrid vs Barcelona - Live Server 1</h1>
+                        <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-users text-red-500"></i> 
+                            <span id="viewers-count" class="font-semibold text-slate-200">4,850</span> Watching Now
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <button onclick="triggerPopUp()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-700 transition cursor-pointer">
+                            <i class="fa-solid fa-clone text-amber-400"></i> Pop-up Mode
+                        </button>
+                        
+                        <button onclick="toggleFullScreen()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-700 transition cursor-pointer">
+                            <i class="fa-solid fa-expand text-red-400"></i> Full Screen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-3 rounded-xl shadow-lg flex items-center justify-between cursor-pointer active:scale-95 transition">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center text-white text-lg">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-amber-100 font-medium">আজকের স্পেশাল অফার</p>
+                    <p class="text-sm font-extrabold text-white">এখানে ক্লিক করে বোনাস নিন! 🔥</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-white/70 text-xs"></i>
+        </div>
+
+        <div class="space-y-2.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i> Select Live Server
+            </h2>
+            
+            <button onclick="playM3U8('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', 'Real Madrid vs Barcelona - Live Server 1', 4850)" 
+                    class="w-full flex items-center justify-between p-3.5 bg-slate-900 active:scale-[0.98] border border-slate-800/60 rounded-xl text-left cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center -space-x-2 shrink-0">
+                        <img src="https://flagcdn.com/w40/es.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-10" alt="Real Madrid Country">
+                        <img src="https://flagcdn.com/w40/es.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-0" alt="Barcelona Country">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-100">Real Madrid vs Barcelona</h3>
+                        <p class="text-[11px] text-slate-400">Server 1 (Direct Stream)</p>
+                    </div>
+                </div>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">WATCH</span>
+            </button>
+
+            <button onclick="playSocial('https://www.youtube.com/embed/dQw4w9WgXcQ', 'Brazil vs Argentina - Live Server 2 (YouTube)', 8120)" 
+                    class="w-full flex items-center justify-between p-3.5 bg-slate-900 active:scale-[0.98] border border-slate-800/60 rounded-xl text-left cursor-pointer">
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center -space-x-2 shrink-0">
+                        <img src="https://flagcdn.com/w40/br.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-10" alt="Brazil">
+                        <img src="https://flagcdn.com/w40/ar.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-0" alt="Argentina">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-100">Brazil vs Argentina</h3>
+                        <p class="text-[11px] text-slate-400">Server 2 (Social Stream)</p>
+                    </div>
+                </div>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">WATCH</span>
+            </button>
+        </div>
+
+        <div class="w-full bg-slate-900 border border-slate-800/60 rounded-xl p-3 text-center">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">ADVERTISEMENT</p>
+            <div class="text-xs text-slate-400 py-4 border border-dashed border-slate-800 rounded-lg bg-slate-950/40">
+                [ Place your AdMob / Banner Ad Code Here ]
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-950 text-center py-4 text-[10px] text-slate-600 border-t border-slate-900/60 mt-auto">
+        <p>&copy; 2026 Sporto Live. All rights reserved.</p>
+    </footer>
+
+    <script>
+        var videoElement = document.getElementById('sporto-player');
+        var currentViewers = 4850;
+        var isYouTubeActive = false;
+        var hls = null;
+
+        // ডিফল্ট ফার্স্ট ম্যাচ লোড
+        initHls('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8');
+
+        function initHls(url) {
+            if (Hls.isSupported()) {
+                if (hls) { hls.destroy(); }
+                hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+            } else if (videoElement.canPlayType('application/x-mpegURL')) {
+                videoElement.src = url;
+            }
+        }
+
+        function playM3U8(url, title, viewers) {
+            isYouTubeActive = false;
+            document.getElementById('social-player-wrapper').classList.add('hidden');
+            document.getElementById('m3u8-player-wrapper').classList.remove('hidden');
+            
+            currentViewers = viewers;
+            document.getElementById('current-match-title').innerText = title;
+            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
+            
+            initHls(url);
+            videoElement.play();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function playSocial(url, title, viewers) {
+            isYouTubeActive = true;
+            videoElement.pause();
+            document.getElementById('m3u8-player-wrapper').classList.add('hidden');
+            document.getElementById('social-player-wrapper').classList.remove('hidden');
+            
+            currentViewers = viewers;
+            document.getElementById('current-match-title').innerText = title;
+            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
+            
+            document.getElementById('social-player').src = url;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ভিউ কাউন্টার অটো-চেঞ্জার
+        setInterval(function() {
+            var fluctuation = Math.floor(Math.random() * 21) - 10;
+            currentViewers += fluctuation;
+            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
+        }, 4000);
+
+        function toggleFullScreen() {
+            var playerContainer = document.getElementById("player-container");
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (playerContainer.requestFullscreen) { playerContainer.requestFullscreen(); }
+                else if (playerContainer.webkitRequestFullscreen) { playerContainer.webkitRequestFullscreen(); }
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+            }
+        }
+
+        async function triggerPopUp() {
+            if(isYouTubeActive) {
+                alert("ইউটিউব/ফেসবুক সার্ভারের জন্য পপ-আপ মোড সাপোর্টেড না। কাইন্ডলি ডিরেক্ট স্ট্রিম (Server 1) ব্যবহার করুন।");
+                return;
+            }
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else {
+                    if (document.pictureInPictureEnabled) {
+                        await videoElement.requestPictureInPicture();
+                    } else {
+                        alert("আপনার ব্রাউজারে পপ-আপ মোড সাপোর্ট করছে না।");
+                    }
+                }
+            } catch (error) {
+                console.error("PiP Error: ", error);
+            }
+        }
+    </script>
+</body>
+</html>
