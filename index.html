@@ -1,213 +1,418 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sporto Live HD - Watch Live Sports</title>
+    <title>Sporto Live</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col select-none">
+<body class="bg-[#0b0c10] text-[#c5c6c7] font-sans antialiased selection:bg-amber-500 selection:text-black">
 
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-circle-play text-red-500 text-xl animate-pulse"></i>
-            <span class="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-500">SPORTO LIVE</span>
-        </div>
-        <div>
-            <span class="bg-red-600/20 text-red-400 border border-red-500/30 text-[11px] font-bold uppercase px-2.5 py-1 rounded-full flex items-center gap-1.5 animate-pulse">
-                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> LIVE
-            </span>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgyr8ogRDZbINTsMEW22anju3R8eoxdkI",
+            authDomain: "sporto-live-bfbac.firebaseapp.com",
+            databaseURL: "https://sporto-live-bfbac-default-rtdb.firebaseio.com/",
+            projectId: "sporto-live-bfbac",
+            storageBucket: "sporto-live-bfbac.firebasestorage.app",
+            messagingSenderId: "1088877686562",
+            appId: "1:1088877686562:web:0f0588f544f7569f61bf7b",
+            measurementId: "G-B3D72D6KHZ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+    </script>
+
+    <header class="bg-[#1f2833] border-b border-[#45a29e]/20 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showHomepage()">
+                <i class="fa-solid fa-circle-play text-amber-500 text-2xl animate-pulse"></i>
+                <span class="text-xl font-black tracking-wider text-white">SPORTO<span class="text-amber-500">LIVE</span></span>
+            </div>
+            <div id="user-profile-zone" class="flex items-center gap-3">
+                </div>
         </div>
     </header>
 
-    <main class="flex-grow w-full max-w-md mx-auto p-3 space-y-4">
+    <main class="max-w-3xl mx-auto p-4 min-h-[calc(100vh-4rem)] space-y-4">
         
-        <div id="player-container" class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800/80 shadow-xl">
-            <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+        <div id="homepage-section" class="space-y-6">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-5 rounded-2xl shadow-xl text-black relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 text-9xl translate-x-10 translate-y-10"><i class="fa-solid fa-futbol"></i></div>
+                <h2 class="text-2xl font-black mb-1">Welcome to Sporto Live!</h2>
+                <p class="text-sm font-medium opacity-90">Enjoy premium live sports streaming without mandatory registration.</p>
+            </div>
+
+            <div class="bg-[#1f2833]/60 border border-amber-500/20 rounded-2xl p-3 shadow-md">
+                <div class="text-[10px] font-bold text-amber-500 tracking-widest uppercase mb-2 flex items-center gap-1">
+                    <i class="fa-solid fa-star text-[8px]"></i> Sponsored Advertisement
+                </div>
+                <a href="https://facebook.com" target="_blank" class="block w-full overflow-hidden rounded-xl bg-black/40 hover:opacity-90 transition-all">
+                    <div class="p-4 text-center border border-zinc-800 rounded-xl">
+                        <p class="text-white font-bold text-sm"><i class="fa-solid fa-rectangle-ad text-amber-500 mr-2 text-lg"></i> Your Sponsor Ad Banner Here</p>
+                        <p class="text-xs text-zinc-400 mt-1">Place your business banner or client ads here to earn revenue.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-2 h-6 bg-amber-500 rounded-full"></span>
+                    <h3 class="text-lg font-bold text-white tracking-wide">🔴 Current Live Matches</h3>
+                </div>
                 
-                <div id="m3u8-player-wrapper" class="w-full h-full">
-                    <video id="sporto-player" class="w-full h-full object-contain" controls autoplay muted playsinline pip="true">
-                        <source src="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8" type="application/x-mpegURL">
-                    </video>
-                </div>
-
-                <div id="social-player-wrapper" class="w-full h-full absolute top-0 left-0 hidden">
-                    <iframe id="social-player" class="w-full h-full object-contain" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-
-            </div>
-            
-            <div class="p-3.5 bg-slate-900 flex flex-col gap-3">
-                <div class="flex flex-col gap-3">
-                    <div>
-                        <h1 id="current-match-title" class="text-base font-bold text-slate-100 leading-snug">Real Madrid vs Barcelona - Live Server 1</h1>
-                        <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                            <i class="fa-solid fa-users text-red-500"></i> 
-                            <span id="viewers-count" class="font-semibold text-slate-200">4,850</span> Watching Now
-                        </p>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                        <button onclick="triggerPopUp()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-700 transition cursor-pointer">
-                            <i class="fa-solid fa-clone text-amber-400"></i> Pop-up Mode
-                        </button>
-                        
-                        <button onclick="toggleFullScreen()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-700 transition cursor-pointer">
-                            <i class="fa-solid fa-expand text-red-400"></i> Full Screen
-                        </button>
+                <div id="matches-grid" class="grid gap-4">
+                    <div class="text-center py-8 text-zinc-500 text-sm">
+                        <i class="fa-solid fa-spinner animate-spin text-amber-500 text-xl mb-2"></i>
+                        <p>Loading live matches from server...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-3 rounded-xl shadow-lg flex items-center justify-between cursor-pointer active:scale-95 transition">
-            <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center text-white text-lg">
-                    <i class="fa-solid fa-gift"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-amber-100 font-medium">আজকের স্পেশাল অফার</p>
-                    <p class="text-sm font-extrabold text-white">এখানে ক্লিক করে বোনাস নিন! 🔥</p>
-                </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-white/70 text-xs"></i>
-        </div>
-
-        <div class="space-y-2.5">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i> Select Live Server
-            </h2>
-            
-            <button onclick="playM3U8('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', 'Real Madrid vs Barcelona - Live Server 1', 4850)" 
-                    class="w-full flex items-center justify-between p-3.5 bg-slate-900 active:scale-[0.98] border border-slate-800/60 rounded-xl text-left cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="flex items-center -space-x-2 shrink-0">
-                        <img src="https://flagcdn.com/w40/es.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-10" alt="Real Madrid Country">
-                        <img src="https://flagcdn.com/w40/es.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-0" alt="Barcelona Country">
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-100">Real Madrid vs Barcelona</h3>
-                        <p class="text-[11px] text-slate-400">Server 1 (Direct Stream)</p>
-                    </div>
-                </div>
-                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">WATCH</span>
+        <div id="streaming-section" class="hidden space-y-4 animate-fade-in">
+            <button onclick="showHomepage()" class="flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400 font-semibold mb-2 cursor-pointer">
+                <i class="fa-solid fa-arrow-left"></i> Back to Schedule
             </button>
+            
+            <h2 id="current-match-title" class="text-xl font-bold text-white">Match Name</h2>
+            
+            <div class="bg-black rounded-2xl overflow-hidden aspect-video border border-zinc-800 shadow-2xl relative">
+                <video id="video-player" class="w-full h-full" controls autoplay></video>
+            </div>
 
-            <button onclick="playSocial('https://www.youtube.com/embed/dQw4w9WgXcQ', 'Brazil vs Argentina - Live Server 2 (YouTube)', 8120)" 
-                    class="w-full flex items-center justify-between p-3.5 bg-slate-900 active:scale-[0.98] border border-slate-800/60 rounded-xl text-left cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="flex items-center -space-x-2 shrink-0">
-                        <img src="https://flagcdn.com/w40/br.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-10" alt="Brazil">
-                        <img src="https://flagcdn.com/w40/ar.png" class="w-7 h-7 object-cover rounded-full border-2 border-slate-900 z-0" alt="Argentina">
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-100">Brazil vs Argentina</h3>
-                        <p class="text-[11px] text-slate-400">Server 2 (Social Stream)</p>
-                    </div>
+            <div class="bg-[#1f2833]/60 border border-amber-500/20 rounded-xl p-2.5 shadow-md">
+                <div class="text-[9px] font-bold text-amber-500 tracking-widest uppercase mb-1.5 flex items-center gap-1">
+                    <i class="fa-solid fa-certificate text-[7px]"></i> Sponsored Ad
                 </div>
-                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">WATCH</span>
-            </button>
-        </div>
+                <a href="https://facebook.com" target="_blank" class="block w-full overflow-hidden rounded-lg bg-black/50 hover:opacity-90 transition-all">
+                    <div class="py-3 px-4 flex items-center justify-between text-xs">
+                        <span class="text-white font-semibold"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i> Your Premium Partner Ad Here</span>
+                        <span class="text-amber-500 font-bold underline">Visit Now <i class="fa-solid fa-chevron-right text-[10px] ml-0.5"></i></span>
+                    </div>
+                </a>
+            </div>
 
-        <div class="w-full bg-slate-900 border border-slate-800/60 rounded-xl p-3 text-center">
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">ADVERTISEMENT</p>
-            <div class="text-xs text-slate-400 py-4 border border-dashed border-slate-800 rounded-lg bg-slate-950/40">
-                [ Place your AdMob / Banner Ad Code Here ]
+            <div class="flex justify-between items-center bg-[#1f2833] p-4 rounded-xl border border-zinc-800">
+                <span class="text-red-500 font-extrabold flex items-center gap-2 text-sm tracking-wider uppercase">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> Live Watching
+                </span>
+                <span class="bg-black/50 text-[#66fcf1] px-3 py-1.5 rounded-lg font-black text-sm tracking-wide border border-[#45a29e]/20">
+                    <i class="fa-solid fa-eye mr-1.5"></i> <span id="view-counter">1,250</span>
+                </span>
+            </div>
+
+            <div class="bg-[#1f2833] rounded-xl border border-zinc-800 overflow-hidden shadow-xl">
+                <div class="bg-black/30 px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+                    <h3 class="text-amber-500 font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-comments"></i> Live Discussion</h3>
+                </div>
+                
+                <div id="chat-box" class="h-64 overflow-y-auto p-4 space-y-3 text-sm bg-black/20">
+                    </div>
+
+                <div id="comment-action-area" class="p-3 bg-black/40 border-t border-zinc-800">
+                    </div>
             </div>
         </div>
-
     </main>
 
-    <footer class="bg-slate-950 text-center py-4 text-[10px] text-slate-600 border-t border-slate-900/60 mt-auto">
-        <p>&copy; 2026 Sporto Live. All rights reserved.</p>
-    </footer>
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-md">
+        <div class="bg-[#1f2833] w-full max-w-md p-6 rounded-2xl border border-zinc-700 shadow-2xl relative transform transition-all scale-100">
+            
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/40 hover:bg-red-500 hover:text-white text-zinc-400 flex items-center justify-center transition-all cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center text-xl mx-auto mb-3"><i class="fa-solid fa-user-shield"></i></div>
+                <h3 id="modal-title" class="text-xl font-bold text-white">Join Sporto Live</h3>
+                <p class="text-xs text-zinc-400 mt-1">Unlock premium chat features and global discussions</p>
+            </div>
+
+            <div class="flex bg-black/40 p-1 rounded-lg mb-4 border border-zinc-800">
+                <button onclick="switchAuthTab('email')" id="tab-email" class="flex-1 py-2 rounded-md text-xs font-bold bg-amber-500 text-black transition-all cursor-pointer">Email Mode</button>
+                <button onclick="switchAuthTab('phone')" id="tab-phone" class="flex-1 py-2 rounded-md text-xs font-bold text-zinc-400 transition-all cursor-pointer">Mobile Mode</button>
+            </div>
+
+            <div id="form-email" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Email Address</label>
+                    <input type="email" id="email-input" class="w-full p-2.5 bg-black/50 rounded-lg border border-zinc-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Password</label>
+                    <input type="password" id="password-input" class="w-full p-2.5 bg-black/50 rounded-lg border border-zinc-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div id="form-phone" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Select Country Code</label>
+                    <select id="country-code-select" onchange="updateCountryCodeInput()" class="w-full p-2.5 bg-black/50 rounded-lg border border-zinc-700 text-white text-sm focus:outline-none focus:border-amber-500 mb-2">
+                        <option value="+880">🇧🇩 Bangladesh (+880)</option>
+                        <option value="+91">🇮🇳 India (+91)</option>
+                        <option value="+966">🇸🇦 Saudi Arabia (+966)</option>
+                        <option value="+971">🇦🇪 UAE (+971)</option>
+                        <option value="+44">🇬🇧 United Kingdom (+44)</option>
+                        <option value="+1">🇺🇸 USA/Canada (+1)</option>
+                        <option value="+92">🇵🇰 Pakistan (+92)</option>
+                        <option value="+60">🇲🇾 Malaysia (+60)</option>
+                        <option value="+65">🇸🇬 Singapore (+65)</option>
+                        <option value="+968">🇴🇲 Oman (+968)</option>
+                        <option value="+965">🇰🇼 Kuwait (+965)</option>
+                        <option value="+974">🇶🇦 Qatar (+974)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Mobile Number</label>
+                    <div class="flex rounded-lg overflow-hidden border border-zinc-700 focus-within:border-amber-500 bg-black/50">
+                        <input type="text" id="phone-code-input" value="+880" class="w-18 bg-zinc-800 p-2.5 text-center text-sm text-zinc-300 border-r border-zinc-700 font-bold focus:outline-none">
+                        <input type="tel" id="phone-input" placeholder="Number here" class="w-full p-2.5 bg-transparent text-white text-sm focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Password / PIN</label>
+                    <input type="password" id="phone-password-input" placeholder="At least 6 digits" class="w-full p-2.5 bg-black/50 rounded-lg border border-zinc-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <button onclick="submitAuth()" id="modal-submit-btn" class="w-full bg-amber-500 text-black font-extrabold py-3 rounded-xl mt-6 hover:bg-amber-400 shadow-lg shadow-amber-500/10 cursor-pointer transition-all">Sign In</button>
+            
+            <p class="text-xs text-center mt-4 text-zinc-400">
+                <span id="modal-toggle-desc">Don't have an account?</span> 
+                <button onclick="toggleModalMode()" id="modal-toggle-btn" class="text-amber-500 font-bold underline ml-1 cursor-pointer">Register here</button>
+            </p>
+        </div>
+    </div>
 
     <script>
-        var videoElement = document.getElementById('sporto-player');
-        var currentViewers = 4850;
-        var isYouTubeActive = false;
-        var hls = null;
+        let currentUser = null;
+        let pendingAction = null;
+        let authTab = "email";
+        let isSignUpMode = false;
+        
+        let activeMatchUrl = "";
+        let activeMatchName = "";
 
-        // ডিফল্ট ফার্স্ট ম্যাচ লোড
-        initHls('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8');
+        // 🔗 ১. ডাটাবেজ থেকে রিয়েল-টাইম খেলার লিস্ট লোড করা
+        function listenForLiveMatches() {
+            database.ref('matches').on('value', snapshot => {
+                const matchesGrid = document.getElementById('matches-grid');
+                matchesGrid.innerHTML = '';
+                
+                if(!snapshot.exists()) {
+                    matchesGrid.innerHTML = `<div class="text-center py-6 text-zinc-500 text-sm">No live matches available right now.</div>`;
+                    return;
+                }
 
-        function initHls(url) {
-            if (Hls.isSupported()) {
-                if (hls) { hls.destroy(); }
-                hls = new Hls();
+                snapshot.forEach(childSnapshot => {
+                    const matchId = childSnapshot.key;
+                    const match = childSnapshot.val();
+                    
+                    const cardHtml = `
+                        <div onclick="selectMatch('${match.title}', '${match.streamUrl}')" class="bg-[#1f2833] hover:bg-[#25303f] p-4 rounded-xl border border-zinc-800 transition-all duration-300 transform hover:-translate-y-1 shadow-md cursor-pointer flex items-center justify-between group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-black/40 flex items-center justify-center text-amber-500 text-xl group-hover:bg-amber-500 group-hover:text-black transition-all"><i class="fa-solid fa-play ml-0.5"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-white group-hover:text-amber-500 transition-colors">${match.title}</h4>
+                                    <p class="text-xs text-zinc-400 mt-0.5"><i class="fa-regular fa-clock mr-1"></i> ${match.details || 'Live Streaming'}</p>
+                                </div>
+                            </div>
+                            <span class="bg-red-500/10 text-red-500 text-xs font-bold px-2.5 py-1 rounded-full border border-red-500/20 uppercase tracking-widest animate-pulse">Live</span>
+                        </div>
+                    `;
+                    matchesGrid.innerHTML += cardHtml;
+                });
+            });
+        }
+
+        // ২. স্পেশাল ভিডিও প্লেয়ার কন্ট্রোল (m3u8 এবং mp4 দুইটাই চলবে)
+        function playLiveStream(url) {
+            const video = document.getElementById('video-player');
+            
+            if (Hls.isSupported() && url.includes('.m3u8')) {
+                const hls = new Hls();
                 hls.loadSource(url);
-                hls.attachMedia(videoElement);
-            } else if (videoElement.canPlayType('application/x-mpegURL')) {
-                videoElement.src = url;
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(()=>{});
+                });
+            } else {
+                // নরমাল MP4 লিঙ্কের জন্য
+                video.src = url;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play().catch(()=>{});
+                });
             }
         }
 
-        function playM3U8(url, title, viewers) {
-            isYouTubeActive = false;
-            document.getElementById('social-player-wrapper').classList.add('hidden');
-            document.getElementById('m3u8-player-wrapper').classList.remove('hidden');
-            
-            currentViewers = viewers;
-            document.getElementById('current-match-title').innerText = title;
-            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
-            
-            initHls(url);
-            videoElement.play();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function selectMatch(name, url) {
+            activeMatchName = name;
+            activeMatchUrl = url;
+            document.getElementById('current-match-title').innerText = name;
+
+            if (!currentUser) {
+                pendingAction = 'stream';
+                openAuthModal();
+            } else {
+                executeStreaming();
+            }
         }
 
-        function playSocial(url, title, viewers) {
-            isYouTubeActive = true;
-            videoElement.pause();
-            document.getElementById('m3u8-player-wrapper').classList.add('hidden');
-            document.getElementById('social-player-wrapper').classList.remove('hidden');
-            
-            currentViewers = viewers;
-            document.getElementById('current-match-title').innerText = title;
-            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
-            
-            document.getElementById('social-player').src = url;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function executeStreaming() {
+            document.getElementById('homepage-section').classList.add('hidden');
+            document.getElementById('streaming-section').classList.remove('hidden');
+            playLiveStream(activeMatchUrl);
         }
 
-        // ভিউ কাউন্টার অটো-চেঞ্জার
-        setInterval(function() {
-            var fluctuation = Math.floor(Math.random() * 21) - 10;
-            currentViewers += fluctuation;
-            document.getElementById('viewers-count').innerText = currentViewers.toLocaleString();
+        function showHomepage() {
+            document.getElementById('homepage-section').classList.remove('hidden');
+            document.getElementById('streaming-section').classList.add('hidden');
+            document.getElementById('video-player').pause();
+        }
+
+        // ৩. পপ-আপ ও অথ সেটিংস
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            if (pendingAction === 'stream') executeStreaming();
+            pendingAction = null;
+        }
+        function updateCountryCodeInput() {
+            document.getElementById('phone-code-input').value = document.getElementById('country-code-select').value;
+        }
+
+        function switchAuthTab(type) {
+            authTab = type;
+            if(type === 'email') {
+                document.getElementById('tab-email').className = "flex-1 py-2 rounded-md text-xs font-bold bg-amber-500 text-black cursor-pointer";
+                document.getElementById('tab-phone').className = "flex-1 py-2 rounded-md text-xs font-bold text-zinc-400 cursor-pointer";
+                document.getElementById('form-email').classList.remove('hidden');
+                document.getElementById('form-phone').classList.add('hidden');
+            } else {
+                document.getElementById('tab-phone').className = "flex-1 py-2 rounded-md text-xs font-bold bg-amber-500 text-black cursor-pointer";
+                document.getElementById('tab-email').className = "flex-1 py-2 rounded-md text-xs font-bold text-zinc-400 cursor-pointer";
+                document.getElementById('form-phone').classList.remove('hidden');
+                document.getElementById('form-email').classList.add('hidden');
+            }
+        }
+
+        function toggleModalMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('modal-title').innerText = isSignUpMode ? "Create Free Account" : "Join Sporto Live";
+            document.getElementById('modal-submit-btn').innerText = isSignUpMode ? "Sign Up Now" : "Sign In";
+            document.getElementById('modal-toggle-desc').innerText = isSignUpMode ? "Already have an account?" : "Don't have an account?";
+            document.getElementById('modal-toggle-btn').innerText = isSignUpMode ? "Login here" : "Register here";
+        }
+
+        function submitAuth() {
+            if (authTab === 'email') {
+                const email = document.getElementById('email-input').value.trim();
+                const pass = document.getElementById('password-input').value;
+                if(!email || !pass) return alert("Please complete all fields!");
+
+                if(isSignUpMode) {
+                    auth.createUserWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
+                } else {
+                    auth.signInWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
+                }
+            } else {
+                let code = document.getElementById('phone-code-input').value.trim().replace('+', '');
+                const phone = document.getElementById('phone-input').value.trim();
+                const pass = document.getElementById('phone-password-input').value;
+                if(!code || !phone || !pass) return alert("Please fill up all fields!");
+                
+                const fakeEmail = `phone_${code}${phone}@sportolive.com`;
+                if(isSignUpMode) {
+                    auth.createUserWithEmailAndPassword(fakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("User already exists or check details."));
+                } else {
+                    auth.signInWithEmailAndPassword(fakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Invalid phone or password."));
+                }
+            }
+        }
+
+        function logout() { auth.signOut(); showHomepage(); }
+
+        // ৪. ইউজার স্টেট ও কমেন্ট হ্যান্ডলার
+        auth.onAuthStateChanged(user => {
+            const profileZone = document.getElementById('user-profile-zone');
+            const commentArea = document.getElementById('comment-action-area');
+            
+            if (user) {
+                currentUser = user;
+                let displayIdentity = user.email.includes('phone_') ? user.email.replace('phone_', '📱 ').split('@')[0] : user.email.split('@')[0];
+                profileZone.innerHTML = `
+                    <span class="text-xs font-bold text-zinc-300 border border-zinc-700 bg-black/40 px-3 py-1.5 rounded-full"><i class="fa-regular fa-user text-amber-500 mr-1"></i> ${displayIdentity}</span>
+                    <button onclick="logout()" class="text-xs bg-red-600/10 border border-red-500/20 text-red-500 px-3 py-1.5 rounded-lg font-bold hover:bg-red-500 hover:text-white cursor-pointer">Logout</button>
+                `;
+                commentArea.innerHTML = `
+                    <div class="flex gap-2">
+                        <input type="text" id="comment-text" placeholder="Share your opinion..." class="flex-1 p-2.5 bg-black/50 rounded-xl border border-zinc-700 text-white focus:outline-none focus:border-amber-500 text-sm">
+                        <button onclick="sendComment()" class="bg-amber-500 text-black px-5 font-extrabold rounded-xl hover:bg-amber-400 text-sm cursor-pointer flex items-center gap-1"><i class="fa-regular fa-paper-plane"></i> Send</button>
+                    </div>
+                `;
+                if (pendingAction === 'stream') executeStreaming();
+                loadComments();
+            } else {
+                currentUser = null;
+                profileZone.innerHTML = `<button onclick="pendingAction=null;openAuthModal();" class="text-xs bg-amber-500 text-black px-4 py-2 rounded-xl font-black hover:bg-amber-400 shadow-md cursor-pointer"><i class="fa-solid fa-right-to-bracket mr-1"></i> Login</button>`;
+                commentArea.innerHTML = `
+                    <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3 text-center">
+                        <p class="text-xs text-amber-400 font-medium">⚠️ Only registered fans can post comments.</p>
+                        <button onclick="pendingAction='comment';openAuthModal();" class="mt-2 text-xs bg-amber-500 text-black font-extrabold px-3 py-1.5 rounded-lg hover:bg-amber-400 cursor-pointer">Login to Chat</button>
+                    </div>
+                `;
+            }
+            if(!document.getElementById('auth-modal').classList.contains('hidden') && pendingAction === null) closeAuthModal();
+        });
+
+        function sendComment() {
+            const text = document.getElementById('comment-text').value;
+            if(!text.trim() || !currentUser) return;
+            let username = currentUser.email.includes('phone_') ? currentUser.email.replace('phone_', '').split('@')[0] : currentUser.email.split('@')[0];
+            database.ref('comments').push({
+                username: username,
+                text: text,
+                timestamp: Date.now(),
+                role: currentUser.email === "949arafathossain@gmail.com" ? "Admin" : "User"
+            });
+            document.getElementById('comment-text').value = '';
+        }
+
+        function loadComments() {
+            database.ref('comments').limitToLast(40).on('value', snapshot => {
+                const chatBox = document.getElementById('chat-box');
+                if(!chatBox) return; chatBox.innerHTML = '';
+                snapshot.forEach(childSnapshot => {
+                    const data = childSnapshot.val();
+                    const isAdm = data.role === "Admin";
+                    chatBox.innerHTML += `
+                        <div class="p-2.5 rounded-lg bg-black/30 border-l-2 ${isAdm ? 'border-amber-500 bg-amber-500/5' : 'border-zinc-700'}">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="text-xs ${isAdm ? 'text-amber-500 font-black' : 'text-zinc-400 font-bold'}">${data.username}</span>
+                                ${isAdm ? '<span class="bg-amber-500 text-black text-[9px] px-1 font-black rounded uppercase">👑 Admin</span>' : ''}
+                            </div>
+                            <p class="text-zinc-200 text-xs">${data.text}</p>
+                        </div>
+                    `;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        setInterval(() => {
+            const element = document.getElementById('view-counter');
+            if(element) element.innerText = (Math.block = Math.floor(Math.random() * (1680 - 1200 + 1)) + 1200).toLocaleString();
         }, 4000);
 
-        function toggleFullScreen() {
-            var playerContainer = document.getElementById("player-container");
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                if (playerContainer.requestFullscreen) { playerContainer.requestFullscreen(); }
-                else if (playerContainer.webkitRequestFullscreen) { playerContainer.webkitRequestFullscreen(); }
-            } else {
-                if (document.exitFullscreen) { document.exitFullscreen(); }
-            }
-        }
-
-        async function triggerPopUp() {
-            if(isYouTubeActive) {
-                alert("ইউটিউব/ফেসবুক সার্ভারের জন্য পপ-আপ মোড সাপোর্টেড না। কাইন্ডলি ডিরেক্ট স্ট্রিম (Server 1) ব্যবহার করুন।");
-                return;
-            }
-            try {
-                if (document.pictureInPictureElement) {
-                    await document.exitPictureInPicture();
-                } else {
-                    if (document.pictureInPictureEnabled) {
-                        await videoElement.requestPictureInPicture();
-                    } else {
-                        alert("আপনার ব্রাউজারে পপ-আপ মোড সাপোর্ট করছে না।");
-                    }
-                }
-            } catch (error) {
-                console.error("PiP Error: ", error);
-            }
-        }
+        // অ্যাপ চালু হলে রিয়েল-টাইম ডাটাবেজ লিসেনার অন করা
+        listenForLiveMatches();
     </script>
 </body>
 </html>
