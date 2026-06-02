@@ -3,31 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sporto Live</title>
-    <!-- Google Font (Poppins) -->
+    <title>Sporto Live V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (v4) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Hls.js for m3u8 Live Streaming Support -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        /* Smooth Custom Scrollbar for Mobile */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-black via-slate-950 to-black text-white font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-black">
+<body class="bg-gradient-to-br from-black via-slate-950 to-black text-white font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-black pb-16">
 
-    <!-- 🔧 ফায়ারবেস কনফিগারেশন -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDgyr8ogRDZbINTsMEW22anju3R8eoxdkI",
@@ -44,27 +37,27 @@
         const database = firebase.database();
     </script>
 
-    <!-- 🔝 টপ বার -->
     <header class="sticky top-0 z-50 backdrop-blur-xl bg-black/70 border-b border-white/5 px-4 h-14 flex items-center justify-between">
-        <div class="flex items-center gap-1.5 cursor-pointer select-none" onclick="showHomepage()">
-            <i class="fa-solid fa-circle-play text-amber-500 text-xl animate-pulse"></i>
-            <span class="text-lg font-black tracking-wider text-white">SPORTO<span class="text-amber-500">LIVE</span></span>
+        <div class="flex flex-col cursor-pointer select-none" onclick="showHomepage()">
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-play text-amber-500 text-lg animate-pulse"></i>
+                <span class="text-base font-black tracking-wider text-white">SPORTO<span class="text-amber-500">LIVE</span></span>
+            </div>
+            <span class="text-[9px] text-zinc-400 font-medium tracking-tight -mt-0.5">⚽ Football Updates & Fan Community</span>
         </div>
         <div id="user-profile-zone" class="flex items-center gap-2 max-w-[150px]"></div>
     </header>
 
-    <!-- 📱 মেইন কন্টেনার -->
-    <main class="max-w-md mx-auto p-4 space-y-6 pb-12">
+    <main class="max-w-md mx-auto p-4 space-y-6">
         
-        <!-- 👑 🔐 অল-ইন-ওয়ান অ্যাডমিন প্যানেল -->
         <div id="admin-panel-section" class="hidden bg-gradient-to-b from-zinc-900 to-black rounded-2xl p-4 border border-amber-500/30 space-y-4 shadow-xl">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <span class="text-xs font-black text-amber-500 uppercase tracking-wider"><i class="fa-solid fa-user-gear mr-1"></i> Creator Control Center</span>
-                <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-bold">Admin Verified</span>
+                <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-bold">Admin System</span>
             </div>
 
             <select id="admin-form-selector" onchange="switchAdminForm(this.value)" class="w-full p-2 bg-black/50 border border-white/10 rounded-lg text-xs font-bold text-amber-500 focus:outline-none">
-                <option value="form-live">🔴 Add Live Match</option>
+                <option value="form-live">🔴 Add Live Match Stream</option>
                 <option value="form-featured">🔥 Set Featured Match</option>
                 <option value="form-upcoming">📅 Add Upcoming Match</option>
                 <option value="form-score">⚽ Update Live Score</option>
@@ -72,252 +65,287 @@
                 <option value="form-news">📰 Add Sports News</option>
             </select>
 
-            <!-- ১. লাইভ ম্যাচ ফর্ম -->
             <div id="form-live" class="admin-sub-form space-y-2">
-                <input type="text" id="adm-live-title" placeholder="Match Title (Real Madrid vs Barcelona)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-live-details" placeholder="Details (La Liga • Live)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-live-title" placeholder="Match Title (e.g., Real Madrid vs PSG)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-live-details" placeholder="Details (e.g., Champions League • Live)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <input type="text" id="adm-live-url" placeholder="Stream URL (.m3u8 or .mp4)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-live-official" placeholder="Official Stream Link (Optional)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitLiveMatch()" class="w-full bg-amber-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">⚡ Push Live Match</button>
+                <button onclick="submitLiveMatch()" class="w-full bg-amber-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">⚡ Push Stream Live</button>
             </div>
 
-            <!-- নতুন: ফিচার্ড ম্যাচ ফর্ম -->
             <div id="form-featured" class="admin-sub-form hidden space-y-2">
                 <input type="text" id="adm-feat-title" placeholder="Match Title (Brazil vs Argentina)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-feat-league" placeholder="League / Cup Name (FIFA World Cup)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-feat-time" placeholder="Time Details (Tonight • 11:00 PM)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-feat-league" placeholder="League / Cup (World Cup Qualifier)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-feat-time" placeholder="Time Details (Tonight 11 PM)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <button onclick="submitFeaturedMatch()" class="w-full bg-green-600 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">🔥 Update Featured</button>
             </div>
 
-            <!-- ২. আপকামিং ম্যাচ ফর্ম -->
             <div id="form-upcoming" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-up-title" placeholder="Teams (Brazil vs Argentina)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-up-title" placeholder="Teams (PSG vs Real Madrid)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <input type="date" id="adm-up-date" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <input type="time" id="adm-up-time" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <button onclick="submitUpcomingMatch()" class="w-full bg-blue-500 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">📅 Schedule Match</button>
             </div>
 
-            <!-- ৩. লাইভ স্কোর ফর্ম -->
             <div id="form-score" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-sc-home" placeholder="Home Team" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-score" placeholder="Current Score (e.g., 2 - 1)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-away" placeholder="Away Team" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-status" placeholder="Status (e.g., LIVE, 75')" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-sc-home" placeholder="Home Team (PSG)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-sc-score" placeholder="Score (2-1)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-sc-away" placeholder="Away Team (Inter Miami)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-sc-status" placeholder="Status (LIVE, 75' or FT)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <button onclick="submitLiveScore()" class="w-full bg-red-500 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">⚽ Update Scoreboard</button>
             </div>
 
-            <!-- ৪. হাইলাইটস ফর্ম -->
             <div id="form-highlight" class="admin-sub-form hidden space-y-2">
                 <input type="text" id="adm-hl-title" placeholder="Highlight Title" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-hl-category" placeholder="Category (Brazil, Argentina, PSG, Real Madrid, Champions League)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <input type="text" id="adm-hl-thumb" placeholder="Thumbnail Image URL" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-hl-url" placeholder="Video Link" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-hl-url" placeholder="Video Stream URL" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <button onclick="submitHighlight()" class="w-full bg-cyan-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">🎬 Save Highlight</button>
             </div>
 
-            <!-- ৫. স্পোর্টস নিউজ ফর্ম -->
             <div id="form-news" class="admin-sub-form hidden space-y-2">
                 <input type="text" id="adm-ns-title" placeholder="News Headline" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-ns-desc" placeholder="Short Description" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
+                <input type="text" id="adm-ns-desc" placeholder="News Content Description" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
                 <button onclick="submitNews()" class="w-full bg-emerald-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">📰 Publish News</button>
             </div>
         </div>
 
-        <!-- 🏠 ১. হোমপেজ ভিউ (LAYOUT WITH PLANNED ADS) -->
         <div id="homepage-section" class="space-y-6">
             
-            <!-- 🏆 Banner 1 (Top Hero) -->
-            <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shadow-lg text-black">
-                <div class="absolute right-0 bottom-0 opacity-10 text-7xl translate-x-4 translate-y-4"><i class="fa-solid fa-futbol"></i></div>
-                <h2 class="text-xl font-black mb-1 text-white tracking-tight">WATCH LIVE SPORTS</h2>
-                <p class="text-[11px] font-medium text-white/90">Premium Football, Cricket & Match Highlights</p>
-            </div>
-
-            <!-- 🔥 Featured Match Container (Dynamic Firebase) -->
-            <div id="featured-match"></div>
-
-            <!-- 🏆 Banner 2 (Below Featured Match / Above Live Scores) -->
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2.5 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Sponsored Advertisement</p>
-                <div class="bg-black/30 rounded-lg py-3 text-xs text-zinc-500 font-medium">Premium Ad Banner Space 2</div>
-            </div>
-
-            <!-- ⏳ FIFA 2026 Countdown Container -->
             <div id="countdown-box"></div>
 
-            <!-- 🔴 Live Scores Box Section (Firebase System) -->
-            <div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-2 h-6 bg-red-500 rounded-full"></span>
-                    <h3 class="text-lg font-bold text-white">Live Scores</h3>
-                </div>
-                <div id="live-score-box" class="grid gap-2.5"></div>
+            <div class="bg-red-600 text-white rounded-xl overflow-hidden py-2 px-4 shadow-lg font-medium text-xs">
+                <marquee behavior="scroll" direction="left" scrollamount="6">
+                    🔥 BREAKING: Neymar returns to Brazil squad &bull; Messi scores winner &bull; FIFA 2026 preparations underway &bull; Stay tuned for live updates!
+                </marquee>
             </div>
 
-            <!-- 🔴 Live Streaming Matches Section -->
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3.5 flex justify-between items-center shadow-inner backdrop-blur-sm">
+                <span class="text-xs text-zinc-400 font-medium tracking-wide flex items-center gap-2">
+                    <span class="flex h-1.5 w-1.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                    </span>
+                    Total Visitors
+                </span>
+                <span id="visitor-count" class="font-black text-amber-500 tracking-wider text-sm">0</span>
+            </div>
+
+            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
+                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
+                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 1]</div>
+            </div>
+
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-1.5 h-4 bg-green-500 rounded-full"></span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Featured Match</h3>
+                </div>
+                <div id="featured-match"></div>
+            </div>
+
             <div class="space-y-3">
                 <div class="flex items-center gap-2">
-                    <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
-                    <h3 class="text-sm font-bold text-white tracking-wide">Live Streaming Now</h3>
+                    <span class="w-2 h-5 bg-red-500 rounded-full"></span>
+                    <h3 class="text-sm font-black text-white tracking-wide uppercase">Live Scores & Streams</h3>
                 </div>
+                <div id="live-score-box" class="grid gap-2.5"></div>
                 <div id="matches-grid" class="grid gap-2.5"></div>
             </div>
 
-            <!-- 🏆 Banner 3 (Below Streaming / Above Highlights) -->
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2.5 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Sponsored Advertisement</p>
-                <div class="bg-black/30 rounded-lg py-3 text-xs text-zinc-500 font-medium">Premium Ad Banner Space 3</div>
+            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
+                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
+                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 2]</div>
             </div>
 
-            <!-- 🎬 Highlights Section -->
             <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                    <span class="w-1.5 h-5 bg-cyan-500 rounded-full"></span>
-                    <h3 class="text-sm font-bold text-white tracking-wide">Match Highlights</h3>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Match Highlights</h3>
+                    </div>
+                    <select id="category-filter" onchange="loadHighlights(this.value)" class="p-1 px-2 bg-zinc-900 border border-white/10 rounded-md text-[10px] text-cyan-400 font-bold focus:outline-none">
+                        <option value="All">All Categories</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="PSG">PSG</option>
+                        <option value="Real Madrid">Real Madrid</option>
+                        <option value="Champions League">Champions League</option>
+                    </select>
                 </div>
-                <div id="highlights-grid" class="grid gap-3"></div>
+                <div id="highlights-grid" class="grid grid-cols-2 gap-3"></div>
             </div>
 
-            <!-- 📅 Upcoming Matches (Firebase Node Container) -->
-            <div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span>
-                    <h3 class="text-lg font-bold text-white">Upcoming Matches</h3>
+            <div class="space-y-3">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-4 bg-blue-500 rounded-full"></span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Upcoming Schedule</h3>
                 </div>
-                <div id="upcoming-grid" class="grid gap-3"></div>
+                <div id="upcoming-grid" class="grid gap-2.5"></div>
             </div>
 
-            <!-- 🏆 Banner 4 (Below Highlights/Upcoming / Above News) -->
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2.5 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Sponsored Advertisement</p>
-                <div class="bg-black/30 rounded-lg py-3 text-xs text-zinc-500 font-medium">Premium Ad Banner Space 4</div>
-            </div>
-
-            <!-- 📰 Football/Sports News Section (Dynamic Firebase) -->
-            <div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-2 h-6 bg-purple-500 rounded-full"></span>
-                    <h3 class="text-lg font-bold text-white">Football News</h3>
+            <div class="space-y-3">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-4 bg-purple-500 rounded-full"></span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Football News</h3>
                 </div>
                 <div id="news-grid" class="grid gap-3"></div>
             </div>
 
-            <!-- 📊 Fan Poll Box -->
-            <div class="bg-[#1f2833] rounded-2xl p-5 border border-zinc-800">
-                <h3 class="text-white font-bold text-lg mb-3">📊 Fan Poll</h3>
-                <p class="text-zinc-300 mb-4 text-xs">Who will win the next big match?</p>
-                <div class="flex gap-3">
-                    <button onclick="showAlert('VOTE CONFIRMED', 'Thank you for voting Brazil! 🇧🇷')" class="flex-1 bg-yellow-500 text-black font-bold py-3 rounded-xl cursor-pointer text-xs">🇧🇷 Brazil</button>
-                    <button onclick="showAlert('VOTE CONFIRMED', 'Thank you for voting Argentina! 🇦🇷')" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl cursor-pointer text-xs">🇦🇷 Argentina</button>
+            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
+                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
+                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 3]</div>
+            </div>
+
+            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 shadow-md">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <span class="text-amber-500 text-xs"><i class="fa-solid fa-chart-bar"></i></span>
+                    <h3 class="text-white font-black text-xs uppercase tracking-wider">Fan Poll</h3>
+                </div>
+                <p class="text-zinc-300 text-xs font-bold mb-3">Who will win the next Big Clash?</p>
+                <div class="flex gap-2.5">
+                    <button onclick="showAlert('VOTE SUBMITTED', 'Thanks for voting Brazil! 🇧🇷')" class="flex-1 bg-yellow-500 text-black font-black py-2.5 rounded-xl cursor-pointer text-xs transition-all hover:opacity-90">🇧🇷 Brazil</button>
+                    <button onclick="showAlert('VOTE SUBMITTED', 'Thanks for voting Argentina! 🇦🇷')" class="flex-1 bg-sky-500 text-white font-black py-2.5 rounded-xl cursor-pointer text-xs transition-all hover:opacity-90">🇦🇷 Argentina</button>
                 </div>
             </div>
         </div>
 
-        <!-- 📺 ২. প্লেয়ার ও ডিসকাশন ভিউ -->
         <div id="streaming-section" class="hidden space-y-4">
             <button onclick="showHomepage()" class="flex items-center gap-1.5 text-xs text-amber-500 font-semibold mb-2 cursor-pointer">
-                <i class="fa-solid fa-arrow-left"></i> Back to Schedule
+                <i class="fa-solid fa-arrow-left"></i> Back to Live Center
             </button>
             
-            <h2 id="current-match-title" class="text-sm font-bold text-white truncate">Match Name</h2>
+            <h2 id="current-match-title" class="text-sm font-black text-white truncate uppercase tracking-wide">Match Name</h2>
             
             <div class="relative overflow-hidden rounded-2xl aspect-video border border-white/10 bg-black shadow-2xl">
                 <div class="absolute top-2 left-2 z-10">
-                   <span id="player-live-badge" class="bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider animate-pulse">LIVE</span>
+                   <span id="player-live-badge" class="bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase animate-pulse">LIVE</span>
                 </div>
                 <video id="video-player" class="w-full h-full object-cover" controls autoplay></video>
             </div>
 
             <div class="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl">
                 <span id="live-watching-text" class="text-red-500 font-extrabold flex items-center gap-1.5 text-[10px] tracking-wider uppercase">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Watching
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Stadium View
                 </span>
                 <span class="bg-black/50 text-amber-500 px-2.5 py-0.5 rounded-md font-black text-xs border border-white/5">
-                    <i class="fa-solid fa-eye mr-1"></i> <span id="view-counter">1,120</span>
+                    <i class="fa-solid fa-eye mr-1"></i> <span id="view-counter">1,240</span> Fans
                 </span>
             </div>
 
-            <div class="bg-white/5 border border-white/5 rounded-xl overflow-hidden">
-                <div class="bg-black/30 px-3 py-2 border-b border-white/10">
-                    <h3 class="text-amber-500 font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-comments"></i> Live Discussion</h3>
+            <div id="chat-section-anchor" class="bg-white/5 border border-white/5 rounded-xl overflow-hidden">
+                <div class="bg-black/30 px-3 py-2 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-amber-500 font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-comments"></i> Fan Discussion Chat</h3>
+                    <span class="text-[9px] bg-white/10 text-zinc-300 px-1.5 py-0.5 rounded font-medium">Real-time</span>
                 </div>
-                <div id="chat-box" class="h-48 overflow-y-auto p-3 space-y-2 text-xs bg-black/20"></div>
+                <div id="chat-box" class="h-44 overflow-y-auto p-3 space-y-2 text-xs bg-black/20"></div>
                 <div id="comment-action-area" class="p-2 bg-black/40 border-t border-white/5"></div>
             </div>
         </div>
+
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/95 backdrop-blur-xl border-t border-white/10 z-50">
+            <div class="grid grid-cols-5 text-center">
+                <a href="#" onclick="showHomepage()" class="py-2.5 text-amber-500 text-[11px] font-medium flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-house text-sm mb-0.5"></i> Home
+                </a>
+                <a href="#live-score-box" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-chart-line text-sm mb-0.5"></i> Scores
+                </a>
+                <a href="#highlights-grid" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-film text-sm mb-0.5"></i> Replays
+                </a>
+                <a href="#news-grid" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-newspaper text-sm mb-0.5"></i> News
+                </a>
+                <a href="#chat-section-anchor" id="nav-chat-btn" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-comments text-sm mb-0.5"></i> Chat
+                </a>
+            </div>
+        </nav>
     </main>
 
-    <!-- 🔐 লগইন মডাল -->
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-md">
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50 backdrop-blur-md">
         <div class="bg-slate-950 border border-white/10 w-full max-w-sm p-5 rounded-2xl shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/5 text-zinc-400 flex items-center justify-center border border-white/5 cursor-pointer text-xs">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="text-center mb-4">
-                <h3 id="modal-title" class="text-base font-bold text-white">Join Sporto Live</h3>
-                <p class="text-[11px] text-zinc-400 mt-0.5">Unlock global live chat and discussions</p>
+                <h3 id="modal-title" class="text-sm font-bold text-white">Join the Fan Chat</h3>
+                <p class="text-[10px] text-zinc-400 mt-0.5">Log in to send messages and discuss live</p>
             </div>
             <div class="flex bg-black/40 p-1 rounded-lg mb-3 border border-white/5">
-                <button onclick="switchAuthTab('email')" id="tab-email" class="flex-1 py-1.5 rounded-md text-[11px] font-bold bg-amber-500 text-black cursor-pointer">Email Mode</button>
-                <button onclick="switchAuthTab('phone')" id="tab-phone" class="flex-1 py-1.5 rounded-md text-[11px] font-bold text-zinc-400 cursor-pointer">Mobile Mode</button>
+                <button onclick="switchAuthTab('email')" id="tab-email" class="flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer">Email</button>
+                <button onclick="switchAuthTab('phone')" id="tab-phone" class="flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer">Mobile</button>
             </div>
             <div id="form-email" class="space-y-2.5">
                 <input type="email" id="email-input" placeholder="Email Address" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
                 <input type="password" id="password-input" placeholder="Password" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
             </div>
             <div id="form-phone" class="hidden space-y-2.5">
-                <select id="country-code-select" onchange="document.getElementById('phone-code-input').value=this.value" class="w-full p-2 bg-black/50 border border-white/10 rounded-lg text-xs text-white">
-                    <option value="+880">🇧🇩 Bangladesh (+880)</option>
-                    <option value="+91">🇮🇳 India (+91)</option>
-                    <option value="+966">🇸🇦 Saudi Arabia (+966)</option>
-                </select>
                 <div class="flex rounded-lg overflow-hidden border border-white/10 bg-black/50">
-                    <input type="text" id="phone-code-input" value="+880" class="w-14 bg-white/5 p-2 text-center text-xs font-bold text-zinc-300 focus:outline-none" readonly>
+                    <input type="text" value="+880" class="w-14 bg-white/5 p-2 text-center text-xs font-bold text-zinc-300 focus:outline-none" readonly>
                     <input type="tel" id="phone-input" placeholder="Mobile Number" class="w-full p-2 bg-transparent text-white text-xs focus:outline-none">
                 </div>
-                <input type="password" id="phone-password-input" placeholder="Password / PIN (min 6 digits)" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
+                <input type="password" id="phone-password-input" placeholder="PIN / Password (min 6 digits)" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
             </div>
             <button onclick="submitAuth()" id="modal-submit-btn" class="w-full bg-amber-500 text-black font-extrabold py-2 rounded-xl mt-4 text-xs cursor-pointer">Sign In</button>
-            <p class="text-[11px] text-center mt-3 text-zinc-400">
+            <p class="text-[10px] text-center mt-3 text-zinc-400">
                 <span id="modal-toggle-desc">Don't have an account?</span> 
-                <button onclick="toggleModalMode()" id="modal-toggle-btn" class="text-amber-500 font-bold underline ml-1 cursor-pointer">Register here</button>
+                <button onclick="toggleModalMode()" id="modal-toggle-btn" class="text-amber-500 font-bold underline ml-0.5 cursor-pointer">Register</button>
             </p>
         </div>
     </div>
 
-    <!-- 📜 জাভাস্ক্রিপ্ট কোর ইঞ্জিন লজিক -->
+    <audio id="goalSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         let currentUser = null;
-        let pendingAction = null;
         let authTab = "email";
         let isSignUpMode = false;
-        let activeMatchUrl = "";
-        let activeMatchName = "";
         let countdownIntervals = {};
+        let allHighlights = [];
+        let firstLoadScores = true;
+        let scoreCache = {};
 
-        // 🔗 অ্যাডমিন ফর্ম স্যুইচ মেকানিজম
-        function switchAdminForm(selectedFormId) {
+        // Visitor Counter Engine
+        let visitorCount = localStorage.getItem("visitorCount") || 0;
+        visitorCount++;
+        localStorage.setItem("visitorCount", visitorCount);
+        document.getElementById("visitor-count").innerText = Number(visitorCount).toLocaleString();
+
+        function switchAdminForm(formId) {
             document.querySelectorAll('.admin-sub-form').forEach(form => form.classList.add('hidden'));
-            document.getElementById(selectedFormId).classList.remove('hidden');
+            document.getElementById(formId).classList.remove('hidden');
         }
 
-        // 📥 ফায়ারবেস থেকে রিয়েল-টাইম ডাটা লিসেনারস
+        // 🔊 প্লে গোল অডিও সিস্টেম
+        function playGoalSound() {
+            const audio = document.getElementById("goalSound");
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio trigger pending engagement."));
+            }
+        }
+
+        // 📥 রিয়েল-টাইম ফায়ারবেস ডাটাবেজ লিসেনারস
         function initAppDatabaseListeners() {
-            // ১. ডাইনামিক ফিচার্ড ম্যাচ রিড
+            // ১. ফিচার্ড ম্যাচ লিসেনার
             database.ref("featuredMatch").on("value", snap => {
                 if(!snap.exists()) return;
                 const data = snap.val();
                 document.getElementById("featured-match").innerHTML = `
                     <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-5 rounded-2xl shadow-xl relative overflow-hidden">
-                        <div class="absolute right-0 bottom-0 opacity-10 text-6xl translate-x-3 translate-y-3"><i class="fa-solid fa-fire"></i></div>
-                        <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-wider">FEATURED MATCH</span>
-                        <h2 class="text-xl font-black text-white mt-3 tracking-tight">${data.title}</h2>
-                        <p class="text-green-100 mt-1.5 text-xs font-medium"><i class="fa-solid fa-trophy text-[10px] mr-1"></i> ${data.league}</p>
-                        <p class="text-green-100 text-xs font-semibold mt-0.5"><i class="fa-regular fa-clock text-[10px] mr-1"></i> ${data.time}</p>
+                        <div class="absolute right-0 bottom-0 opacity-10 text-6xl translate-x-3 translate-y-3"><i class="fa-solid fa-star"></i></div>
+                        <span class="text-[9px] font-black bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-wider">🔥 FEATURED MATCH</span>
+                        <h2 class="text-lg font-black text-white mt-3 tracking-tight">${data.title}</h2>
+                        <p class="text-green-100 mt-1.5 text-xs font-medium">🏆 ${data.league}</p>
+                        <p class="text-green-100 text-xs font-semibold mt-0.5">⏰ ${data.time}</p>
                     </div>
                 `;
             });
 
-            // ২. ডাইনামিক লাইভ স্কোরবোর্ড বক্স রিড
+            // ২. রিয়েল-টাইম লাইভ স্কোরবোর্ড + ডাইনামিক গোল এলার্ট নোটিফিকেশন লজিক
             database.ref('scores').on('value', snap => {
                 const box = document.getElementById('live-score-box');
                 box.innerHTML = '';
@@ -325,70 +353,60 @@
                 
                 snap.forEach(child => {
                     const d = child.val();
+                    const key = child.key;
+
+                    // ডাইনামিক ম্যাচ রেজাল্ট ব্যাজ কালার লজিক (LIVE = Red, FT = Green)
+                    let isFT = d.status && d.status.toUpperCase() === "FT";
+                    let statusColor = isFT ? "bg-green-600 animate-none" : "bg-red-600 animate-pulse";
+
+                    // গোল চেকার ট্রিগার অ্যালার্ট (যদি স্কোর পরিবর্তিত হয় এবং এটি ফার্স্ট লোড না হয়)
+                    if (!firstLoadScores && scoreCache[key] && scoreCache[key] !== d.score) {
+                        playGoalSound();
+                        showAlert("GOAL ALERT ⚽", `${d.home} ${d.score} ${d.away} (${d.status || 'LIVE'})`);
+                    }
+                    scoreCache[key] = d.score;
+
                     box.innerHTML += `
-                        <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center justify-between animate-pulse">
+                        <div class="bg-white/5 border border-white/5 p-3.5 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-2 min-w-0 flex-1">
-                                <span class="bg-red-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">${d.status || 'LIVE'}</span>
+                                <span class="${statusColor} text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                    ${d.status || "LIVE"}
+                                </span>
                                 <p class="text-xs font-bold text-white truncate">${d.home} <span class="text-amber-500 bg-black/40 px-2 py-0.5 rounded-md mx-1 font-black">${d.score}</span> ${d.away}</p>
                             </div>
-                            <i class="fa-solid fa-chart-line text-red-500 text-xs shrink-0"></i>
+                            <i class="fa-solid fa-chart-line text-amber-500 text-xs"></i>
                         </div>
                     `;
                 });
+                firstLoadScores = false;
             });
 
-            // ৩. ডাইনামিক নিউজ সেকশন রিড (Firebase Dynamic)
-            database.ref("news").on("value", snap=>{
-                let html='';
-                if(!snap.exists()) {
-                    document.getElementById("news-grid").innerHTML = `<p class="text-center py-2 text-zinc-600 text-xs">No football news updated.</p>`;
-                    return;
-                }
-                snap.forEach(child=>{
-                    const d=child.val();
-                    html += `
-                        <div class="bg-[#1f2833] p-4 rounded-xl border border-zinc-800">
-                            <h4 class="text-white font-bold text-xs tracking-tight">📰 ${d.title}</h4>
-                            <p class="text-zinc-400 text-[11px] mt-2 leading-relaxed">${d.description}</p>
-                        </div>
-                    `;
-                });
-                document.getElementById("news-grid").innerHTML = html;
-            });
-
-            // ৪. লাইভ ম্যাচ স্ট্রিম রিড
+            // ৩. লাইভ স্ট্রিমিং ম্যাচ গ্রিড
             database.ref('matches').on('value', snap => {
                 const grid = document.getElementById('matches-grid');
                 grid.innerHTML = '';
                 if(!snap.exists()) {
-                    grid.innerHTML = `<div class="text-center py-4 text-zinc-600 text-xs">No active matches streaming now.</div>`;
+                    grid.innerHTML = `<div class="text-center py-2 text-zinc-600 text-xs">No active matches streaming now.</div>`;
                     return;
                 }
                 snap.forEach(child => {
                     const match = child.val();
-                    let officialBtn = match.officialLink ? `
-                        <a href="${match.officialLink}" target="_blank" onclick="event.stopPropagation();" class="bg-blue-600 text-white font-extrabold text-[10px] px-2.5 py-1.5 rounded-lg shrink-0 flex items-center gap-1 shadow-md">Official Link</a>
-                    ` : '';
-
                     grid.innerHTML += `
-                        <div onclick="selectMatch('${match.title}', '${match.streamUrl}', true)" class="bg-white/5 border border-white/5 hover:border-amber-500/40 p-3 rounded-xl cursor-pointer flex items-center justify-between gap-2 transition-all">
+                        <div onclick="selectMatch('${match.title}', '${match.streamUrl}', true)" class="bg-white/5 border border-white/5 hover:border-amber-500/40 p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all">
                             <div class="flex items-center gap-3 min-w-0 flex-1">
                                 <div class="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center text-xs font-black shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
                                 <div class="min-w-0 flex-1">
                                     <h4 class="font-bold text-white text-xs truncate">${match.title}</h4>
-                                    <p class="text-[10px] text-zinc-400 mt-0.5 truncate">${match.details || 'Live Action'}</p>
+                                    <p class="text-[10px] text-zinc-400 mt-0.5 truncate">${match.details || 'Click to watch free'}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                ${officialBtn}
-                                <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Live</span>
-                            </div>
+                            <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Watch Live</span>
                         </div>
                     `;
                 });
             });
 
-            // ৫. আপকামিং ম্যাচ শিডিউল রিড
+            // ৪. আপকামিং ম্যাচ শিডিউল
             database.ref('upcoming').on('value', snap => {
                 const grid = document.getElementById('upcoming-grid');
                 grid.innerHTML = '';
@@ -399,108 +417,129 @@
                 snap.forEach(child => {
                     const d = child.val();
                     const key = child.key;
-                    const dateTimeStr = `${d.date}T${d.time}`;
                     grid.innerHTML += `
-                        <div class="bg-[#1f2833] border border-zinc-800 rounded-xl p-4">
-                            <h4 class="text-white font-bold text-xs truncate">${d.title}</h4>
-                            <div class="flex justify-between items-center mt-2">
-                                <p id="countdown-${key}" class="text-amber-500 font-bold text-[11px]">Calculating...</p>
-                                <span class="text-[10px] text-zinc-400 bg-black/30 px-2 py-0.5 rounded border border-white/5">${d.date} • ${d.time}</span>
+                        <div class="bg-[#1f2833] border border-zinc-800 rounded-xl p-3 flex justify-between items-center">
+                            <div class="min-w-0 flex-1 pr-2">
+                                <h4 class="text-white font-bold text-xs truncate">${d.title}</h4>
+                                <p id="countdown-${key}" class="text-amber-500 font-bold text-[10px] mt-1">Calculating...</p>
                             </div>
+                            <span class="text-[9px] text-zinc-400 bg-black/30 px-2 py-1 rounded shrink-0 border border-white/5">${d.date} • ${d.time}</span>
                         </div>
                     `;
-                    setTimeout(() => startScheduleCountdown(`countdown-${key}`, dateTimeStr), 100);
+                    setTimeout(() => startScheduleCountdown(`countdown-${key}`, `${d.date}T${d.time}`), 100);
                 });
             });
 
-            // ৬. ম্যাচ হাইলাইটস রিড
+            // ৫. ম্যাচ হাইলাইটস ক্যাশে রেন্ডারার
             database.ref('highlights').on('value', snap => {
-                const grid = document.getElementById('highlights-grid');
-                grid.innerHTML = '';
-                if(!snap.exists()) return;
-                snap.forEach(child => {
-                    const hl = child.val();
-                    grid.innerHTML += `
-                        <div class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
-                           <div class="relative aspect-video bg-zinc-900 overflow-hidden w-full">
-                               <img src="${hl.thumbnail || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500'}" class="w-full h-full object-cover opacity-75 hover:scale-105 transition-transform" alt="thumbnail">
-                               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
-                                   <h4 class="font-bold text-white text-xs tracking-tight line-clamp-1">${hl.title}</h4>
-                               </div>
-                           </div>
-                           <div class="p-2.5 bg-zinc-950/40">
-                               <button onclick="selectMatch('${hl.title}', '${hl.streamUrl}', false)" class="w-full bg-cyan-600 text-white font-bold py-1.5 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer">Watch Highlights</button>
-                           </div>
-                        </div>
-                    `;
-                });
+                allHighlights = [];
+                if(snap.exists()) {
+                    snap.forEach(child => { allHighlights.push(child.val()); });
+                }
+                loadHighlights(document.getElementById('category-filter').value || 'All');
             });
-        }
 
-        // ⏰ আপকামিং ম্যাচ কাউন্টডাউন টাইমার
-        function startScheduleCountdown(id, targetDateStr) {
-            if(countdownIntervals[id]) clearInterval(countdownIntervals[id]);
-            function update() {
-                const element = document.getElementById(id);
-                if (!element) return;
-                const now = new Date().getTime();
-                const distance = new Date(targetDateStr).getTime() - now;
-                if (distance < 0) {
-                    element.innerText = "⚽ Match Started";
-                    clearInterval(countdownIntervals[id]);
+            // ৬. ফুটবল নিউজ রিড
+            database.ref("news").on("value", snap=>{
+                let html='';
+                if(!snap.exists()) {
+                    document.getElementById("news-grid").innerHTML = `<p class="text-center py-2 text-zinc-600 text-xs">No news available.</p>`;
                     return;
                 }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                element.innerText = `⏳ ${days}d ${hours}h remaining`;
-            }
-            update();
-            countdownIntervals[id] = setInterval(update, 60000);
+                snap.forEach(child=>{
+                    const d=child.val();
+                    html += `
+                        <div class="bg-[#1f2833] p-3.5 rounded-xl border border-zinc-800">
+                            <h4 class="text-white font-bold text-xs tracking-tight">📰 ${d.title}</h4>
+                            <p class="text-zinc-400 text-[11px] mt-1.5 leading-relaxed">${d.description}</p>
+                        </div>
+                    `;
+                });
+                document.getElementById("news-grid").innerHTML = html;
+            });
         }
 
-        // 🔔 নোটিফিকেশন অ্যালার্ট পপআপ ইঞ্জিন
+        // ক্যাটাগরি অনুযায়ী ফিল্টারড হাইলাইটস
+        function loadHighlights(filterCategory) {
+            const grid = document.getElementById('highlights-grid');
+            grid.innerHTML = '';
+            const filtered = allHighlights.filter(hl => {
+                if(filterCategory === 'All') return true;
+                return hl.category && hl.category.toLowerCase().includes(filterCategory.toLowerCase());
+            });
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-4 text-zinc-600 text-xs">No highlights available.</div>`;
+                return;
+            }
+            filtered.forEach(hl => {
+                grid.innerHTML += `
+                    <div class="bg-white/5 border border-white/5 rounded-xl overflow-hidden flex flex-col justify-between shadow-md">
+                       <div class="relative aspect-video bg-zinc-900 w-full overflow-hidden">
+                           <img src="${hl.thumbnail || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400'}" class="w-full h-full object-cover opacity-80" alt="thumb">
+                           <span class="absolute top-1 left-1 bg-black/60 text-[8px] font-bold text-cyan-400 px-1 py-0.5 rounded uppercase tracking-tight">${hl.category || 'Replay'}</span>
+                       </div>
+                       <div class="p-2 space-y-1.5">
+                           <h4 class="font-bold text-white text-[10px] line-clamp-1 leading-tight">${hl.title}</h4>
+                           <button onclick="selectMatch('${hl.title}', '${hl.streamUrl}', false)" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-1 rounded-lg text-[9px] cursor-pointer transition-all">Watch Replay</button>
+                       </div>
+                    </div>
+                `;
+            });
+        }
+
+        // আপকামিং শিডিউল টাইমার লজিক
+        function startScheduleCountdown(id, targetStr) {
+            if(countdownIntervals[id]) clearInterval(countdownIntervals[id]);
+            function update() {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const distance = new Date(targetStr).getTime() - Date.now();
+                if (distance < 0) { el.innerText = "⚽ Match Live"; clearInterval(countdownIntervals[id]); return; }
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                el.innerText = `⏳ ${d}d ${h}h remaining`;
+            }
+            update(); countdownIntervals[id] = setInterval(update, 60000);
+        }
+
+        // ইনস্ট্যান্ট নোটিফিকেশন পপআপ ইঞ্জিন
         function showAlert(title, msg){
             const div = document.createElement("div");
             div.innerHTML = `
-                <div class="fixed top-5 right-5 left-5 max-w-sm mx-auto bg-gradient-to-r from-green-600 to-emerald-700 text-white p-4 rounded-xl z-50 shadow-2xl border border-white/20 flex items-start gap-3 animate-bounce">
-                    <div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-bell animate-swing"></i></div>
+                <div class="fixed top-5 right-5 left-5 max-w-sm mx-auto bg-gradient-to-r from-green-600 to-emerald-700 text-white p-3.5 rounded-xl z-50 shadow-2xl border border-white/20 flex items-start gap-2.5 animate-bounce">
+                    <div class="bg-white/20 w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-bell"></i></div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="font-black text-xs tracking-wide uppercase text-yellow-300">${title}</h3>
-                        <p class="text-[11px] font-medium mt-0.5 text-white/90">${msg}</p>
+                        <h3 class="font-black text-[11px] uppercase tracking-wide text-yellow-300">${title}</h3>
+                        <p class="text-[10px] font-medium mt-0.5 text-white/90">${msg}</p>
                     </div>
                 </div>
             `;
-            document.body.appendChild(div);
-            setTimeout(() => { div.remove(); }, 5000);
+            document.body.appendChild(div); setTimeout(() => { div.remove(); }, 5000);
         }
 
-        // 👑 ⚡ ক্রিয়েটর অ্যাডমিন পুশ মেথড সমূহ
+        // 👑 অ্যাডমিন রাইট মেথড সমূহ
         function submitLiveMatch() {
             const title = document.getElementById('adm-live-title').value.trim();
             const details = document.getElementById('adm-live-details').value.trim();
             const url = document.getElementById('adm-live-url').value.trim();
-            const official = document.getElementById('adm-live-official').value.trim();
-            if(!title || !url) return alert("Required fields missing!");
-            database.ref('matches').push({ title, details, streamUrl: url, officialLink: official })
-            .then(() => { showAlert("SUCCESS", "🔴 Live Stream Activated!"); resetFields(['adm-live-title', 'adm-live-details', 'adm-live-url', 'adm-live-official']); });
+            if(!title || !url) return alert("Missing Title or URL");
+            database.ref('matches').push({ title, details, streamUrl: url }).then(() => { showAlert("LIVE UPDATED", "🔴 Stream pushed!"); resetFields(['adm-live-title', 'adm-live-details', 'adm-live-url']); });
         }
 
         function submitFeaturedMatch() {
             const title = document.getElementById('adm-feat-title').value.trim();
             const league = document.getElementById('adm-feat-league').value.trim();
             const time = document.getElementById('adm-feat-time').value.trim();
-            if(!title || !league || !time) return alert("All fields are required!");
-            database.ref('featuredMatch').set({ title, league, time })
-            .then(() => { showAlert("SUCCESS", "🔥 Featured Match Updated!"); resetFields(['adm-feat-title', 'adm-feat-league', 'adm-feat-time']); });
+            if(!title || !league || !time) return alert("Fill all fields");
+            database.ref('featuredMatch').set({ title, league, time }).then(() => { showAlert("FEATURED UPDATE", "🔥 Featured match updated!"); resetFields(['adm-feat-title', 'adm-feat-league', 'adm-feat-time']); });
         }
 
         function submitUpcomingMatch() {
             const title = document.getElementById('adm-up-title').value.trim();
             const date = document.getElementById('adm-up-date').value;
             const time = document.getElementById('adm-up-time').value;
-            if(!title || !date || !time) return alert("All fields required!");
-            database.ref('upcoming').push({ title, date, time })
-            .then(() => { showAlert("SUCCESS", "📅 Match Scheduled!"); resetFields(['adm-up-title', 'adm-up-date', 'adm-up-time']); });
+            if(!title || !date || !time) return alert("Provide metadata");
+            database.ref('upcoming').push({ title, date, time }).then(() => { showAlert("SCHEDULED", "📅 Schedule added!"); resetFields(['adm-up-title', 'adm-up-date', 'adm-up-time']); });
         }
 
         function submitLiveScore() {
@@ -508,37 +547,33 @@
             const score = document.getElementById('adm-sc-score').value.trim();
             const away = document.getElementById('adm-sc-away').value.trim();
             const status = document.getElementById('adm-sc-status').value.trim();
-            if(!home || !score || !away) return alert("Score fields missing!");
-            database.ref('scores').push({ home, score, away, status: status || 'LIVE' })
-            .then(() => { showAlert("SCORE UPDATE", `${home} ${score} ${away}`); resetFields(['adm-sc-home', 'adm-sc-score', 'adm-sc-away', 'adm-sc-status']); });
+            if(!home || !score || !away) return alert("Provide scores");
+            database.ref('scores').push({ home, score, away, status: status || 'LIVE' }).then(() => { resetFields(['adm-sc-home', 'adm-sc-score', 'adm-sc-away', 'adm-sc-status']); });
         }
 
         function submitHighlight() {
             const title = document.getElementById('adm-hl-title').value.trim();
+            const category = document.getElementById('adm-hl-category').value.trim();
             const thumbnail = document.getElementById('adm-hl-thumb').value.trim();
             const url = document.getElementById('adm-hl-url').value.trim();
-            if(!title || !url) return alert("Fields missing!");
-            database.ref('highlights').push({ title, thumbnail, streamUrl: url })
-            .then(() => { showAlert("SUCCESS", "🎬 Replay Saved!"); resetFields(['adm-hl-title', 'adm-hl-thumb', 'adm-hl-url']); });
+            if(!title || !url || !category) return alert("Missing fields");
+            database.ref('highlights').push({ title, category, thumbnail, streamUrl: url }).then(() => { showAlert("HIGHLIGHT SAVED", `🎬 Saved under ${category}`); resetFields(['adm-hl-title', 'adm-hl-category', 'adm-hl-thumb', 'adm-hl-url']); });
         }
 
         function submitNews() {
             const title = document.getElementById('adm-ns-title').value.trim();
             const desc = document.getElementById('adm-ns-desc').value.trim();
-            if(!title || !desc) return alert("Fields missing!");
-            database.ref('news').push({ title, description: desc })
-            .then(() => { showAlert("NEWS FLASH", "📰 Headline Published!"); resetFields(['adm-ns-title', 'adm-ns-desc']); });
+            if(!title || !desc) return alert("Fill headline & description");
+            database.ref('news').push({ title, description: desc }).then(() => { showAlert("NEWS FLASHED", "📰 Published successfully!"); resetFields(['adm-ns-title', 'adm-ns-desc']); });
         }
 
         function resetFields(ids) { ids.forEach(id => document.getElementById(id).value = ''); }
 
-        // 📺 ভিডিও স্ট্রিমিং প্লেয়ার লজিক
+        // 📺 ফ্রি ভিডিও স্ট্রিমিং অ্যাকশন (লগইন রিকোয়ারমেন্ট রিমুভড)
         function playStreamSource(url) {
             const video = document.getElementById('video-player');
             if (Hls.isSupported() && url.includes('.m3u8')) {
-                const hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
+                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
             } else {
                 video.src = url;
@@ -547,27 +582,23 @@
         }
 
         function selectMatch(name, url, isLive) {
-            activeMatchName = name; activeMatchUrl = url;
             document.getElementById('current-match-title').innerText = name;
             const badge = document.getElementById('player-live-badge');
             const watchingText = document.getElementById('live-watching-text');
+            
             if(isLive) {
-                badge.className = "bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider animate-pulse";
+                badge.className = "bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase animate-pulse";
                 badge.innerText = "LIVE";
-                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Watching`;
+                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Stadium View`;
             } else {
-                badge.className = "bg-cyan-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider";
+                badge.className = "bg-cyan-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase";
                 badge.innerText = "🎬 REPLAY";
-                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Total Views`;
+                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Highlights Replay View`;
             }
-            if (!currentUser) { pendingAction = 'stream'; openAuthModal(); } 
-            else { executeStreaming(); }
-        }
 
-        function executeStreaming() {
             document.getElementById('homepage-section').classList.add('hidden');
             document.getElementById('streaming-section').classList.remove('hidden');
-            playStreamSource(activeMatchUrl);
+            playStreamSource(url);
         }
 
         function showHomepage() {
@@ -576,54 +607,63 @@
             document.getElementById('video-player').pause();
         }
 
-        // 🔐 অথেনটিকেশন মডিউল
+        // 📲 চ্যাট বাটনের জন্য নেভিগেশনাল হ্যান্ডলার
+        document.getElementById('nav-chat-btn').addEventListener('click', function(e) {
+            const streamingSection = document.getElementById('streaming-section');
+            if (streamingSection.classList.contains('hidden')) {
+                e.preventDefault();
+                // যদি কোনো ম্যাচ সিলেক্ট করা না থাকে, ডেমো হিসেবে চ্যাট অন করতে ফাস্ট লাইভ স্ট্রিম বা নো ম্যাচ ডাটা দিয়ে ভিউ চেঞ্জ করা হবে
+                document.getElementById('homepage-section').classList.add('hidden');
+                streamingSection.classList.remove('hidden');
+                document.getElementById('chat-section-anchor').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // 🔐 অথেনটিকেশন ইঞ্জিন (শুধু কমেন্ট পোস্ট করার জন্য প্রয়োজনীয়)
         function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeAuthModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
-            if (pendingAction === 'stream') executeStreaming();
-            pendingAction = null;
-        }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        
         function switchAuthTab(type) {
             authTab = type;
             if(type === 'email') {
-                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[11px] font-bold bg-amber-500 text-black cursor-pointer";
-                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[11px] font-bold text-zinc-400 cursor-pointer";
+                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer";
+                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer";
                 document.getElementById('form-email').classList.remove('hidden');
                 document.getElementById('form-phone').classList.add('hidden');
             } else {
-                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[11px] font-bold bg-amber-500 text-black cursor-pointer";
-                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[11px] font-bold text-zinc-400 cursor-pointer";
+                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer";
+                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer";
                 document.getElementById('form-phone').classList.remove('hidden');
                 document.getElementById('form-email').classList.add('hidden');
             }
         }
+        
         function toggleModalMode() {
             isSignUpMode = !isSignUpMode;
-            document.getElementById('modal-title').innerText = isSignUpMode ? "Create Free Account" : "Join Sporto Live";
-            document.getElementById('modal-submit-btn').innerText = isSignUpMode ? "Sign Up Now" : "Sign In";
-            document.getElementById('modal-toggle-desc').innerText = isSignUpMode ? "Already have an account?" : "Don't have an account?";
-            document.getElementById('modal-toggle-btn').innerText = isSignUpMode ? "Login here" : "Register here";
+            document.getElementById('modal-title').innerText = isSignUpMode ? "Register Fan Account" : "Join the Fan Chat";
+            document.getElementById('modal-submit-btn').innerText = isSignUpMode ? "Create Account" : "Sign In";
+            document.getElementById('modal-toggle-desc').innerText = isSignUpMode ? "Have an account?" : "Don't have an account?";
+            document.getElementById('modal-toggle-btn').innerText = isSignUpMode ? "Login" : "Register";
         }
 
         function submitAuth() {
             if (authTab === 'email') {
                 const email = document.getElementById('email-input').value.trim();
                 const pass = document.getElementById('password-input').value;
-                if(!email || !pass) return alert("Please fill-up all fields");
+                if(!email || !pass) return alert("Fill up identity fields.");
                 if(isSignUpMode) auth.createUserWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
                 else auth.signInWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
             } else {
-                let code = document.getElementById('phone-code-input').value.trim().replace('+', '');
                 const phone = document.getElementById('phone-input').value.trim();
                 const pass = document.getElementById('phone-password-input').value;
-                if(!phone || !pass) return alert("Please enter phone and pin");
-                const fakeEmail = `phone_${code}${phone}@sportolive.com`;
-                if(isSignUpMode) auth.createUserWithEmailAndPassword(fakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Error or Account exists."));
-                else auth.signInWithEmailAndPassword(fakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Invalid phone credentials."));
+                if(!phone || !pass) return alert("Fill up mobile credentials.");
+                const generatedFakeEmail = `phone_880${phone}@sportolive.com`;
+                if(isSignUpMode) auth.createUserWithEmailAndPassword(generatedFakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Account exists or error occurred."));
+                else auth.signInWithEmailAndPassword(generatedFakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Invalid phone credentials."));
             }
         }
 
-        function logout() { auth.signOut(); showHomepage(); }
+        function logout() { auth.signOut(); }
 
         auth.onAuthStateChanged(user => {
             const profileZone = document.getElementById('user-profile-zone');
@@ -632,87 +672,85 @@
             
             if (user) {
                 currentUser = user;
-                let displayIdentity = user.email.includes('phone_') ? user.email.replace('phone_', '📱 ').split('@')[0] : user.email.split('@')[0];
+                let displayIdentity = user.email.includes('phone_') ? user.email.replace('phone_880', '📱 ').split('@')[0] : user.email.split('@')[0];
                 profileZone.innerHTML = `
-                    <span class="text-[11px] font-bold text-zinc-300 border border-white/10 bg-white/5 px-2 py-1 rounded-full truncate flex-1 min-w-0" title="${displayIdentity}">${displayIdentity}</span>
-                    <button onclick="logout()" class="text-[9px] bg-red-600/10 border border-red-500/20 text-red-500 px-2 py-1 rounded-lg font-bold cursor-pointer shrink-0">Out</button>
+                    <span class="text-[10px] font-bold text-zinc-300 border border-white/10 bg-white/5 px-2 py-1 rounded-full truncate flex-1 min-w-0" title="${displayIdentity}">${displayIdentity}</span>
+                    <button onclick="logout()" class="text-[9px] bg-red-600/10 border border-red-500/20 text-red-500 px-2 py-1 rounded-lg font-bold cursor-pointer shrink-0">Exit</button>
                 `;
                 commentArea.innerHTML = `
                     <div class="flex gap-1.5">
-                        <input type="text" id="comment-text" placeholder="Type message..." class="flex-1 p-2 bg-black/50 rounded-xl border border-white/10 text-white text-xs focus:outline-none">
-                        <button onclick="sendComment()" class="bg-amber-500 text-black px-3 font-extrabold rounded-xl text-xs cursor-pointer"><i class="fa-regular fa-paper-plane"></i></button>
+                        <input type="text" id="comment-text" placeholder="Type friendly banter..." class="flex-1 p-2 bg-black/50 rounded-xl border border-white/10 text-white text-xs focus:outline-none">
+                        <button onclick="sendComment()" class="bg-amber-500 text-black px-3.5 font-extrabold rounded-xl text-xs cursor-pointer"><i class="fa-regular fa-paper-plane"></i></button>
                     </div>
                 `;
                 if (user.email === "949arafathossain@gmail.com") adminPanel.classList.remove('hidden');
                 else adminPanel.classList.add('hidden');
-                if (pendingAction === 'stream') executeStreaming();
-                loadComments();
             } else {
                 currentUser = null; adminPanel.classList.add('hidden');
-                profileZone.innerHTML = `<button onclick="pendingAction=null;openAuthModal();" class="text-xs bg-amber-500 text-black px-3 py-1.5 rounded-xl font-black cursor-pointer">Login</button>`;
-                commentArea.innerHTML = `<p class="text-[10px] text-center text-amber-400 font-medium py-1">⚠️ Please login to post live chat comments.</p>`;
+                profileZone.innerHTML = `<button onclick="openAuthModal()" class="text-xs bg-amber-500 text-black px-3 py-1.5 rounded-xl font-black cursor-pointer">Login</button>`;
+                commentArea.innerHTML = `
+                    <div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl text-center">
+                        <p class="text-[10px] text-amber-400 font-bold mb-1.5">💬 Want to join the live community chat?</p>
+                        <button onclick="openAuthModal()" class="bg-amber-500 text-black font-black text-[10px] px-3 py-1 rounded-md cursor-pointer">Login to Chat</button>
+                    </div>
+                `;
             }
+            loadComments();
         });
 
         function sendComment() {
             const text = document.getElementById('comment-text').value;
             if(!text.trim() || !currentUser) return;
-            let username = currentUser.email.includes('phone_') ? currentUser.email.replace('phone_', '').split('@')[0] : currentUser.email.split('@')[0];
-            database.ref('comments').push({ username: username, text: text, timestamp: Date.now(), role: currentUser.email === "949arafathossain@gmail.com" ? "Admin" : "User" });
+            let name = currentUser.email.includes('phone_') ? currentUser.email.replace('phone_880', '').split('@')[0] : currentUser.email.split('@')[0];
+            database.ref('comments').push({ username: name, text: text, timestamp: Date.now(), role: currentUser.email === "949arafathossain@gmail.com" ? "Admin" : "User" });
             document.getElementById('comment-text').value = '';
         }
 
         function loadComments() {
-            database.ref('comments').limitToLast(30).on('value', snapshot => {
-                const chatBox = document.getElementById('chat-box');
-                if(!chatBox) return; chatBox.innerHTML = '';
-                snapshot.forEach(childSnapshot => {
-                    const data = childSnapshot.val();
-                    const isAdm = data.role === "Admin";
-                    chatBox.innerHTML += `
+            database.ref('comments').limitToLast(35).on('value', snapshot => {
+                const box = document.getElementById('chat-box');
+                if(!box) return; box.innerHTML = '';
+                snapshot.forEach(child => {
+                    const d = child.val();
+                    const isAdm = d.role === "Admin";
+                    box.innerHTML += `
                         <div class="p-2 rounded-lg bg-white/5 border-l-2 ${isAdm ? 'border-amber-500 bg-amber-500/5' : 'border-white/10'}">
-                            <span class="text-[10px] ${isAdm ? 'text-amber-500 font-black' : 'text-zinc-400 font-bold'}">${data.username} ${isAdm ? '👑' : ''}</span>
-                            <p class="text-zinc-200 text-xs mt-0.5">${data.text}</p>
+                            <span class="text-[9px] ${isAdm ? 'text-amber-500 font-black' : 'text-zinc-400 font-bold'}">${d.username} ${isAdm ? '👑' : ''}</span>
+                            <p class="text-zinc-200 text-xs mt-0.5">${d.text}</p>
                         </div>
                     `;
                 });
-                chatBox.scrollTop = chatBox.scrollHeight;
+                box.scrollTop = box.scrollHeight;
             });
         }
 
-        // ভিউ কাউন্টার সিমুলেশন
+        // ফ্যান ভিউয়ার সিমুলেটর
         setInterval(() => {
-            const element = document.getElementById('view-counter');
-            if(element) element.innerText = (Math.floor(Math.random() * (1550 - 950 + 1)) + 950).toLocaleString();
+            const el = document.getElementById('view-counter');
+            if(el) el.innerText = (Math.floor(Math.random() * (1600 - 1100 + 1)) + 1100).toLocaleString();
         }, 5000);
 
-        // 🏆 FIFA WORLD CUP COUNTDOWN
+        // 🏆 SECTION 1: FIFA WORLD CUP COUNTDOWN
         function startCountdown(){
             const target = new Date("2026-06-11").getTime();
             setInterval(()=>{
-                const now = Date.now();
-                const diff = target - now;
+                const diff = target - Date.now();
                 const days = Math.floor(diff/(1000*60*60*24));
                 const box = document.getElementById("countdown-box");
                 if(box){
                     box.innerHTML = `
-                        <div class="bg-[#1f2833] p-5 rounded-2xl border border-zinc-800">
-                            <h3 class="text-white font-bold text-sm tracking-wide">🏆 FIFA WORLD CUP 2026</h3>
-                            <p class="text-amber-500 text-xl font-black mt-2">${days} Days Left</p>
+                        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shadow-lg text-black">
+                            <div class="absolute right-0 bottom-0 opacity-15 text-7xl translate-x-4 translate-y-4"><i class="fa-solid fa-futbol"></i></div>
+                            <h2 class="text-base font-black mb-0.5 text-white tracking-tight uppercase">🏆 FIFA WORLD CUP 2026</h2>
+                            <p class="text-[20px] font-black text-white tracking-wider">${days} Days Left <span class="text-xs font-medium text-amber-100">until kick-off</span></p>
                         </div>
                     `;
                 }
             },1000);
         }
 
-        // অ্যাপ ইনিশিয়ালাইজেশন
         initAppDatabaseListeners();
         startCountdown();
-
-        // ডেমো গোল অ্যালার্ট টেস্ট কল (পেজ লোড হওয়ার ৫ সেকেন্ড পর ট্রিপ করবে)
-        setTimeout(() => {
-            showAlert("GOAL ALERT ⚽", "Brazil 1 - 0 Argentina");
-        }, 5000);
     </script>
 </body>
 </html>
