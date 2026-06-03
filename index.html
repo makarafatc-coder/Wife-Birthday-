@@ -2,755 +2,764 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sporto Live V2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sporto Live - Professional Football Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
+    
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 10px; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #09090b;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-black via-slate-950 to-black text-white font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-black pb-16">
+<body class="text-zinc-200 antialiased min-h-screen pb-24 overflow-y-auto no-scrollbar">
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgyr8ogRDZbINTsMEW22anju3R8eoxdkI",
-            authDomain: "sporto-live-bfbac.firebaseapp.com",
-            databaseURL: "https://sporto-live-bfbac-default-rtdb.firebaseio.com/",
-            projectId: "sporto-live-bfbac",
-            storageBucket: "sporto-live-bfbac.firebasestorage.app",
-            messagingSenderId: "1088877686562",
-            appId: "1:1088877686562:web:0f0588f544f7569f61bf7b",
-            measurementId: "G-B3D72D6KHZ"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-    </script>
-
-    <header class="sticky top-0 z-50 backdrop-blur-xl bg-black/70 border-b border-white/5 px-4 h-14 flex items-center justify-between">
-        <div class="flex flex-col cursor-pointer select-none" onclick="showHomepage()">
-            <div class="flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-play text-amber-500 text-lg animate-pulse"></i>
-                <span class="text-base font-black tracking-wider text-white">SPORTO<span class="text-amber-500">LIVE</span></span>
+    <header class="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-50 px-4 py-3.5">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 px-3 py-1 rounded-xl font-extrabold text-xs tracking-wider flex items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-circle-play text-sm text-red-600 animate-pulse"></i>
+                    SPORTO<span class="font-medium text-zinc-900">LIVE</span>
+                </div>
             </div>
-            <span class="text-[9px] text-zinc-400 font-medium tracking-tight -mt-0.5">⚽ Football Updates & Fan Community</span>
+            
+            <div id="auth-area">
+                <button onclick="openAuthModal()" class="bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold text-xs px-3.5 py-2 rounded-xl transition-all active:scale-95">
+                    Sign In
+                </button>
+            </div>
         </div>
-        <div id="user-profile-zone" class="flex items-center gap-2 max-w-[150px]"></div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-6">
-        
-        <div id="admin-panel-section" class="hidden bg-gradient-to-b from-zinc-900 to-black rounded-2xl p-4 border border-amber-500/30 space-y-4 shadow-xl">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <span class="text-xs font-black text-amber-500 uppercase tracking-wider"><i class="fa-solid fa-user-gear mr-1"></i> Creator Control Center</span>
-                <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-bold">Admin System</span>
-            </div>
-
-            <select id="admin-form-selector" onchange="switchAdminForm(this.value)" class="w-full p-2 bg-black/50 border border-white/10 rounded-lg text-xs font-bold text-amber-500 focus:outline-none">
-                <option value="form-live">🔴 Add Live Match Stream</option>
-                <option value="form-featured">🔥 Set Featured Match</option>
-                <option value="form-upcoming">📅 Add Upcoming Match</option>
-                <option value="form-score">⚽ Update Live Score</option>
-                <option value="form-highlight">🎬 Add Match Highlight</option>
-                <option value="form-news">📰 Add Sports News</option>
-            </select>
-
-            <div id="form-live" class="admin-sub-form space-y-2">
-                <input type="text" id="adm-live-title" placeholder="Match Title (e.g., Real Madrid vs PSG)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-live-details" placeholder="Details (e.g., Champions League • Live)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-live-url" placeholder="Stream URL (.m3u8 or .mp4)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitLiveMatch()" class="w-full bg-amber-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">⚡ Push Stream Live</button>
-            </div>
-
-            <div id="form-featured" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-feat-title" placeholder="Match Title (Brazil vs Argentina)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-feat-league" placeholder="League / Cup (World Cup Qualifier)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-feat-time" placeholder="Time Details (Tonight 11 PM)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitFeaturedMatch()" class="w-full bg-green-600 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">🔥 Update Featured</button>
-            </div>
-
-            <div id="form-upcoming" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-up-title" placeholder="Teams (PSG vs Real Madrid)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="date" id="adm-up-date" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="time" id="adm-up-time" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitUpcomingMatch()" class="w-full bg-blue-500 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">📅 Schedule Match</button>
-            </div>
-
-            <div id="form-score" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-sc-home" placeholder="Home Team (PSG)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-score" placeholder="Score (2-1)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-away" placeholder="Away Team (Inter Miami)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-sc-status" placeholder="Status (LIVE, 75' or FT)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitLiveScore()" class="w-full bg-red-500 text-white font-extrabold py-2 rounded-lg text-xs cursor-pointer">⚽ Update Scoreboard</button>
-            </div>
-
-            <div id="form-highlight" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-hl-title" placeholder="Highlight Title" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-hl-category" placeholder="Category (Brazil, Argentina, PSG, Real Madrid, Champions League)" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-hl-thumb" placeholder="Thumbnail Image URL" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-hl-url" placeholder="Video Stream URL" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitHighlight()" class="w-full bg-cyan-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">🎬 Save Highlight</button>
-            </div>
-
-            <div id="form-news" class="admin-sub-form hidden space-y-2">
-                <input type="text" id="adm-ns-title" placeholder="News Headline" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <input type="text" id="adm-ns-desc" placeholder="News Content Description" class="w-full p-2.5 bg-black/40 rounded-lg border border-white/10 text-xs text-white">
-                <button onclick="submitNews()" class="w-full bg-emerald-500 text-black font-extrabold py-2 rounded-lg text-xs cursor-pointer">📰 Publish News</button>
+    <div class="max-w-md mx-auto px-4 mt-3">
+        <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-2.5 flex items-center gap-3 overflow-hidden">
+            <span class="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider animate-pulse flex items-center gap-1">
+                <i class="fa-solid fa-bullhorn"></i> Breaking
+            </span>
+            <div class="text-xs font-bold text-zinc-400 whitespace-nowrap overflow-hidden relative w-full">
+                <div id="breaking-ticker-text" class="inline-block animate-[marquee_20s_linear_infinite] hover:[animation-play-state:paused] cursor-pointer">
+                    Welcome to Sporto Live! Updates loading live from server...
+                </div>
             </div>
         </div>
+    </div>
 
-        <div id="homepage-section" class="space-y-6">
-            
-            <div id="countdown-box"></div>
+    <main class="max-w-md mx-auto px-4 pt-4">
 
-            <div class="bg-red-600 text-white rounded-xl overflow-hidden py-2 px-4 shadow-lg font-medium text-xs">
-                <marquee behavior="scroll" direction="left" scrollamount="6">
-                    🔥 BREAKING: Neymar returns to Brazil squad &bull; Messi scores winner &bull; FIFA 2026 preparations underway &bull; Stay tuned for live updates!
-                </marquee>
-            </div>
-
-            <div class="bg-white/5 border border-white/10 rounded-xl p-3.5 flex justify-between items-center shadow-inner backdrop-blur-sm">
-                <span class="text-xs text-zinc-400 font-medium tracking-wide flex items-center gap-2">
-                    <span class="flex h-1.5 w-1.5 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                    </span>
-                    Total Visitors
-                </span>
-                <span id="visitor-count" class="font-black text-amber-500 tracking-wider text-sm">0</span>
-            </div>
-
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
-                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 1]</div>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="w-1.5 h-4 bg-green-500 rounded-full"></span>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Featured Match</h3>
+        <section id="tab-home" class="tab-content space-y-4">
+            <div class="space-y-2.5">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="w-1.5 h-3.5 bg-red-500 rounded-full animate-pulse"></span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Live Matches</h3>
                 </div>
-                <div id="featured-match"></div>
-            </div>
-
-            <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-5 bg-red-500 rounded-full"></span>
-                    <h3 class="text-sm font-black text-white tracking-wide uppercase">Live Scores & Streams</h3>
-                </div>
-                <div id="live-score-box" class="grid gap-2.5"></div>
-                <div id="matches-grid" class="grid gap-2.5"></div>
-            </div>
-
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
-                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 2]</div>
-            </div>
-
-            <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Match Highlights</h3>
+                <div id="live-player-wrapper" class="bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden shadow-2xl hidden mb-3">
+                    <div class="aspect-video w-full bg-zinc-900">
+                        <video id="sporto-player" class="video-js vjs-default-skin" controls preload="auto">
+                            <p class="vjs-no-js">To view this video please enable JavaScript</p>
+                        </video>
                     </div>
-                    <select id="category-filter" onchange="loadHighlights(this.value)" class="p-1 px-2 bg-zinc-900 border border-white/10 rounded-md text-[10px] text-cyan-400 font-bold focus:outline-none">
-                        <option value="All">All Categories</option>
-                        <option value="Brazil">Brazil</option>
-                        <option value="Argentina">Argentina</option>
-                        <option value="PSG">PSG</option>
-                        <option value="Real Madrid">Real Madrid</option>
-                        <option value="Champions League">Champions League</option>
-                    </select>
                 </div>
-                <div id="highlights-grid" class="grid grid-cols-2 gap-3"></div>
+                <div id="home-live-score" class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-4 shadow-xl">
+                    <p class="text-center text-xs text-zinc-600 py-2">No matches currently live.</p>
+                </div>
             </div>
 
+            <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-2 text-center relative overflow-hidden group">
+                <span class="absolute top-1 right-2 text-[8px] font-bold text-zinc-600 tracking-wider uppercase">Sponsored</span>
+                <div class="bg-zinc-900/40 border border-dashed border-zinc-800 rounded-lg py-5 px-4 flex flex-col items-center justify-center min-h-[60px]">
+                    <p class="text-[10px] font-bold text-zinc-500 tracking-wide">Premium Ad Space — Slot A</p>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="text-xs uppercase tracking-wider font-bold text-zinc-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-clapperboard text-amber-500"></i> Recent Highlights
+                    </h3>
+                    <span onclick="switchTab('highlights')" class="text-[10px] text-amber-500 font-bold cursor-pointer hover:underline">View All</span>
+                </div>
+                <div id="home-highlights-preview" class="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory">
+                    <p class="text-center text-xs text-zinc-600 py-2 w-full">Loading highlights...</p>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Upcoming Matches</h3>
+                </div>
+                <div id="home-upcoming-list" class="grid gap-2">
+                    <p class="text-center text-xs text-zinc-600 py-2">Loading fixtures...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-scores" class="tab-content space-y-4 hidden">
+            <div class="border-b border-zinc-800 pb-2">
+                <h2 class="text-sm font-black text-white uppercase tracking-wider">Football Score Center</h2>
+            </div>
             <div class="space-y-3">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-1.5 h-4 bg-blue-500 rounded-full"></span>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Upcoming Schedule</h3>
-                </div>
-                <div id="upcoming-grid" class="grid gap-2.5"></div>
+                <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest px-1">Live & Finished Status</h4>
+                <div id="score-center-target" class="space-y-2.5"></div>
             </div>
+        </section>
 
-            <div class="space-y-3">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-1.5 h-4 bg-purple-500 rounded-full"></span>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Football News</h3>
-                </div>
-                <div id="news-grid" class="grid gap-3"></div>
+        <section id="tab-highlights" class="tab-content space-y-4 hidden">
+            <div class="border-b border-zinc-800 pb-2">
+                <h2 class="text-sm font-black text-white uppercase tracking-wider">Match Replays & Clips</h2>
             </div>
-
-            <div class="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
-                <p class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Sponsored Ad</p>
-                <div class="bg-black/40 rounded-lg py-3 text-xs text-zinc-500 font-medium border border-dashed border-white/5">[AD BANNER POSITION 3]</div>
+            <div id="full-highlights-grid" class="grid gap-3">
+                <p class="text-center text-xs text-zinc-600 py-6">Loading replays...</p>
             </div>
+        </section>
 
+        <section id="tab-fanzone" class="tab-content space-y-4 hidden">
             <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 shadow-md">
-                <div class="flex items-center gap-1.5 mb-2">
-                    <span class="text-amber-500 text-xs"><i class="fa-solid fa-chart-bar"></i></span>
-                    <h3 class="text-white font-black text-xs uppercase tracking-wider">Fan Poll</h3>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i>
+                        <h3 class="text-white font-black text-sm">International Fan Voting</h3>
+                    </div>
+                    <button id="admin-clear-votes" class="hidden text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-1 rounded-lg font-bold">Clear All Data</button>
                 </div>
-                <p class="text-zinc-300 text-xs font-bold mb-3">Who will win the next Big Clash?</p>
-                <div class="flex gap-2.5">
-                    <button onclick="showAlert('VOTE SUBMITTED', 'Thanks for voting Brazil! 🇧🇷')" class="flex-1 bg-yellow-500 text-black font-black py-2.5 rounded-xl cursor-pointer text-xs transition-all hover:opacity-90">🇧🇷 Brazil</button>
-                    <button onclick="showAlert('VOTE SUBMITTED', 'Thanks for voting Argentina! 🇦🇷')" class="flex-1 bg-sky-500 text-white font-black py-2.5 rounded-xl cursor-pointer text-xs transition-all hover:opacity-90">🇦🇷 Argentina</button>
+                <p class="text-zinc-400 text-xs mb-4">Choose your ultimate contender. You can switch your choice anytime, but only 1 vote is allowed per user!</p>
+                
+                <div id="poll-options-grid" class="grid grid-cols-2 gap-2 text-xs font-bold">
+                    <button id="btn-vote-Brazil" onclick="voteTeam('Brazil')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇧🇷 Brazil</span><span id="badge-Brazil" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Argentina" onclick="voteTeam('Argentina')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇦🇷 Argentina</span><span id="badge-Argentina" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Spain" onclick="voteTeam('Spain')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇪🇸 Spain</span><span id="badge-Spain" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-France" onclick="voteTeam('France')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇫🇷 France</span><span id="badge-France" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Germany" onclick="voteTeam('Germany')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇩🇪 Germany</span><span id="badge-Germany" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Portugal" onclick="voteTeam('Portugal')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇵🇹 Portugal</span><span id="badge-Portugal" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Italy" onclick="voteTeam('Italy')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇮🇹 Italy</span><span id="badge-Italy" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                    <button id="btn-vote-Netherlands" onclick="voteTeam('Netherlands')" class="bg-zinc-900 border border-zinc-800 text-left p-3 rounded-xl flex items-center justify-between transition-all hover:bg-zinc-800">
+                        <span>🇳🇱 Netherlands</span><span id="badge-Netherlands" class="hidden text-[10px] text-amber-500 font-black">Selected</span>
+                    </button>
+                </div>
+
+                <div id="poll-progress-results" class="mt-6 space-y-3 pt-4 border-t border-zinc-900"></div>
+            </div>
+        </section>
+
+        <section id="tab-admin" class="tab-content space-y-4 hidden max-h-[80vh] overflow-y-auto pb-10 no-scrollbar">
+            <div id="admin-panel-secure" class="bg-zinc-900 border border-amber-500/20 rounded-2xl p-4 shadow-2xl hidden space-y-5">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <h2 class="text-amber-500 font-extrabold flex items-center gap-2 text-xs uppercase tracking-wider">
+                        <i class="fa-solid fa-user-gear"></i> Creator Engine (Full Control)
+                    </h2>
+                </div>
+                
+                <div class="space-y-4 text-xs">
+                    <div class="space-y-1.5 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                        <label class="block font-bold text-amber-500 uppercase tracking-wide">Update Breaking News</label>
+                        <input type="text" id="adm-breaking-text" placeholder="Type hot news headline..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                        <button type="button" id="btn-update-breaking" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl">Publish Ticker</button>
+                    </div>
+
+                    <div class="space-y-1.5 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                        <label class="block font-bold text-red-500 uppercase tracking-wide">Live Match Dashboard</label>
+                        <input type="text" id="score-match-title" placeholder="Match Title (e.g. Real Madrid vs Barcelona)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white mb-2">
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <input type="text" id="score-current" placeholder="Current Score (e.g. 2 - 1)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white">
+                            <input type="text" id="score-status" placeholder="Status (e.g. 75' Live)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white">
+                        </div>
+                        <input type="text" id="score-stream" placeholder="M3U8 Live Stream URL" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white mb-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="btn-update-score" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 rounded-xl">Update Live</button>
+                            <button type="button" id="btn-clear-live" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 font-bold py-2 rounded-xl">Clear Live Match</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                        <label class="block font-bold text-sky-400 uppercase tracking-wide">Add Upcoming Match</label>
+                        <input type="text" id="up-match-title" placeholder="Match Title (e.g. Man City vs Liverpool)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white mb-2">
+                        <input type="text" id="up-match-time" placeholder="Time & Date (e.g. Tonight 01:00 AM)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white mb-2">
+                        <button type="button" id="btn-add-upcoming" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 rounded-xl">Add Upcoming Fixture</button>
+                    </div>
+
+                    <div class="space-y-1.5 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                        <label class="block font-bold text-zinc-400 uppercase tracking-wide">Add Finished/Yesterday Match Result</label>
+                        <input type="text" id="fin-match-title" placeholder="Match Title (e.g. Chelsea vs Arsenal)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white mb-2">
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <input type="text" id="fin-match-score" placeholder="Final Score (e.g. 0 - 3)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-white">
+                            <span class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-zinc-500 flex items-center justify-center font-bold">Status: FT (Finished)</span>
+                        </div>
+                        <button type="button" id="btn-add-finished" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 rounded-xl">Add Result</button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div id="streaming-section" class="hidden space-y-4">
-            <button onclick="showHomepage()" class="flex items-center gap-1.5 text-xs text-amber-500 font-semibold mb-2 cursor-pointer">
-                <i class="fa-solid fa-arrow-left"></i> Back to Live Center
-            </button>
-            
-            <h2 id="current-match-title" class="text-sm font-black text-white truncate uppercase tracking-wide">Match Name</h2>
-            
-            <div class="relative overflow-hidden rounded-2xl aspect-video border border-white/10 bg-black shadow-2xl">
-                <div class="absolute top-2 left-2 z-10">
-                   <span id="player-live-badge" class="bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase animate-pulse">LIVE</span>
-                </div>
-                <video id="video-player" class="w-full h-full object-cover" controls autoplay></video>
+            <div id="admin-denied-message" class="text-center py-12 text-zinc-600 text-xs">
+                <i class="fa-solid fa-lock text-2xl mb-2 block text-zinc-700"></i> Authorized Admin Access Only.
             </div>
+        </section>
 
-            <div class="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl">
-                <span id="live-watching-text" class="text-red-500 font-extrabold flex items-center gap-1.5 text-[10px] tracking-wider uppercase">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Stadium View
-                </span>
-                <span class="bg-black/50 text-amber-500 px-2.5 py-0.5 rounded-md font-black text-xs border border-white/5">
-                    <i class="fa-solid fa-eye mr-1"></i> <span id="view-counter">1,240</span> Fans
-                </span>
-            </div>
-
-            <div id="chat-section-anchor" class="bg-white/5 border border-white/5 rounded-xl overflow-hidden">
-                <div class="bg-black/30 px-3 py-2 border-b border-white/10 flex items-center justify-between">
-                    <h3 class="text-amber-500 font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-comments"></i> Fan Discussion Chat</h3>
-                    <span class="text-[9px] bg-white/10 text-zinc-300 px-1.5 py-0.5 rounded font-medium">Real-time</span>
-                </div>
-                <div id="chat-box" class="h-44 overflow-y-auto p-3 space-y-2 text-xs bg-black/20"></div>
-                <div id="comment-action-area" class="p-2 bg-black/40 border-t border-white/5"></div>
-            </div>
-        </div>
-
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/95 backdrop-blur-xl border-t border-white/10 z-50">
-            <div class="grid grid-cols-5 text-center">
-                <a href="#" onclick="showHomepage()" class="py-2.5 text-amber-500 text-[11px] font-medium flex flex-col items-center justify-center">
-                    <i class="fa-solid fa-house text-sm mb-0.5"></i> Home
-                </a>
-                <a href="#live-score-box" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
-                    <i class="fa-solid fa-chart-line text-sm mb-0.5"></i> Scores
-                </a>
-                <a href="#highlights-grid" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
-                    <i class="fa-solid fa-film text-sm mb-0.5"></i> Replays
-                </a>
-                <a href="#news-grid" onclick="showHomepage()" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
-                    <i class="fa-solid fa-newspaper text-sm mb-0.5"></i> News
-                </a>
-                <a href="#chat-section-anchor" id="nav-chat-btn" class="py-2.5 text-zinc-400 text-[11px] font-medium flex flex-col items-center justify-center">
-                    <i class="fa-solid fa-comments text-sm mb-0.5"></i> Chat
-                </a>
-            </div>
-        </nav>
     </main>
 
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50 backdrop-blur-md">
-        <div class="bg-slate-950 border border-white/10 w-full max-w-sm p-5 rounded-2xl shadow-2xl relative">
-            <button onclick="closeAuthModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/5 text-zinc-400 flex items-center justify-center border border-white/5 cursor-pointer text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="text-center mb-4">
-                <h3 id="modal-title" class="text-sm font-bold text-white">Join the Fan Chat</h3>
-                <p class="text-[10px] text-zinc-400 mt-0.5">Log in to send messages and discuss live</p>
-            </div>
-            <div class="flex bg-black/40 p-1 rounded-lg mb-3 border border-white/5">
-                <button onclick="switchAuthTab('email')" id="tab-email" class="flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer">Email</button>
-                <button onclick="switchAuthTab('phone')" id="tab-phone" class="flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer">Mobile</button>
-            </div>
-            <div id="form-email" class="space-y-2.5">
-                <input type="email" id="email-input" placeholder="Email Address" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
-                <input type="password" id="password-input" placeholder="Password" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
-            </div>
-            <div id="form-phone" class="hidden space-y-2.5">
-                <div class="flex rounded-lg overflow-hidden border border-white/10 bg-black/50">
-                    <input type="text" value="+880" class="w-14 bg-white/5 p-2 text-center text-xs font-bold text-zinc-300 focus:outline-none" readonly>
-                    <input type="tel" id="phone-input" placeholder="Mobile Number" class="w-full p-2 bg-transparent text-white text-xs focus:outline-none">
-                </div>
-                <input type="password" id="phone-password-input" placeholder="PIN / Password (min 6 digits)" class="w-full p-2 bg-black/50 rounded-lg border border-white/10 text-white text-xs focus:outline-none">
-            </div>
-            <button onclick="submitAuth()" id="modal-submit-btn" class="w-full bg-amber-500 text-black font-extrabold py-2 rounded-xl mt-4 text-xs cursor-pointer">Sign In</button>
-            <p class="text-[10px] text-center mt-3 text-zinc-400">
-                <span id="modal-toggle-desc">Don't have an account?</span> 
-                <button onclick="toggleModalMode()" id="modal-toggle-btn" class="text-amber-500 font-bold underline ml-0.5 cursor-pointer">Register</button>
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-950 border border-zinc-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-all"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-white font-black text-center text-sm mb-4" id="modal-title">Sign In Profile</h3>
+            <form id="auth-form-element" class="space-y-3 text-xs">
+                <input type="email" id="auth-email" placeholder="Email Address" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-amber-500">
+                <input type="password" id="auth-password" placeholder="Password" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-amber-500">
+                <button type="submit" id="btn-auth-submit" class="w-full bg-amber-500 text-black font-black py-3 rounded-xl transition-all shadow-lg">Sign In</button>
+            </form>
+            <p class="text-center text-xs text-zinc-500 mt-4">
+                Don't have an account? <span onclick="toggleAuthMode()" id="btn-toggle-auth" class="text-amber-500 font-bold cursor-pointer underline">Register</span>
             </p>
         </div>
     </div>
 
-    <audio id="goalSound" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
-    </audio>
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/90 backdrop-blur-md border-t border-zinc-900/80 py-2.5 z-40">
+        <div class="max-w-md mx-auto flex items-center justify-around text-zinc-500 text-[10px] font-bold uppercase tracking-wider">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1 text-amber-500">
+                <i class="fa-solid fa-house text-sm"></i><span>Home</span>
+            </button>
+            <button onclick="switchTab('scores')" id="nav-scores" class="flex flex-col items-center gap-1 hover:text-white transition-all">
+                <i class="fa-solid fa-star text-sm"></i><span>Scores</span>
+            </button>
+            <button onclick="switchTab('highlights')" id="nav-highlights" class="flex flex-col items-center gap-1 hover:text-white transition-all">
+                <i class="fa-solid fa-circle-play text-sm"></i><span>Highlights</span>
+            </button>
+            <button onclick="switchTab('fanzone')" id="nav-fanzone" class="flex flex-col items-center gap-1 hover:text-white transition-all">
+                <i class="fa-solid fa-square-poll-horizontal text-sm"></i><span>Fan Zone</span>
+            </button>
+            <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center gap-1 hover:text-white transition-all">
+                <i class="fa-solid fa-user-gear text-sm"></i><span>Profile</span>
+            </button>
+        </div>
+    </nav>
 
-    <script>
-        let currentUser = null;
-        let authTab = "email";
-        let isSignUpMode = false;
-        let countdownIntervals = {};
-        let allHighlights = [];
-        let firstLoadScores = true;
-        let scoreCache = {};
+    <div id="custom-alert" class="fixed top-6 left-1/2 -translate-x-1/2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl shadow-2xl z-50 pointer-events-none opacity-0 transition-all duration-300 text-xs font-bold text-white">Alert Message</div>
 
-        // Visitor Counter Engine
-        let visitorCount = localStorage.getItem("visitorCount") || 0;
-        visitorCount++;
-        localStorage.setItem("visitorCount", visitorCount);
-        document.getElementById("visitor-count").innerText = Number(visitorCount).toLocaleString();
+    <script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
 
-        function switchAdminForm(formId) {
-            document.querySelectorAll('.admin-sub-form').forEach(form => form.classList.add('hidden'));
-            document.getElementById(formId).classList.remove('hidden');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIza....",
+            authDomain: "sporto-live.firebaseapp.com",
+            databaseURL: "https://sporto-live-default-rtdb.firebaseio.com",
+            projectId: "sporto-live",
+            storageBucket: "sporto-live.appspot.com",
+            messagingSenderId: "968179471069",
+            appId: "1:968179471069:web:xxxxxxxx"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const player = videojs('sporto-player', { fluid: true });
+
+        let isLoginMode = true;
+        let isLocalAdminOverride = false;
+
+        window.openAuthModal = function() {
+            document.getElementById("auth-modal").classList.remove("hidden");
         }
 
-        // 🔊 প্লে গোল অডিও সিস্টেম
-        function playGoalSound() {
-            const audio = document.getElementById("goalSound");
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log("Audio trigger pending engagement."));
+        window.closeAuthModal = function() {
+            document.getElementById("auth-modal").classList.add("hidden");
+        }
+
+        window.toggleAuthMode = function() {
+            isLoginMode = !isLoginMode;
+            document.getElementById("modal-title").innerText = isLoginMode ? "Sign In Profile" : "Register Account";
+            document.getElementById("btn-auth-submit").innerText = isLoginMode ? "Sign In" : "Register Now";
+            document.getElementById("btn-toggle-auth").innerText = isLoginMode ? "Register" : "Sign In";
+        }
+
+        window.handleLogout = function() {
+            isLocalAdminOverride = false;
+            localStorage.removeItem("sporto_admin_session");
+            signOut(auth).then(() => {
+                triggerUIRefresh(null);
+                showAlert("Logged Out Securely.");
+            });
+        }
+
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('text-amber-500'));
+            document.getElementById(`nav-${tabId}`).classList.add('text-amber-500');
+        }
+
+        function showAlert(msg) {
+            const toast = document.getElementById("custom-alert");
+            if(toast) {
+                toast.innerText = msg;
+                toast.classList.remove("opacity-0");
+                toast.classList.add("opacity-100");
+                setTimeout(() => { toast.classList.remove("opacity-100"); toast.classList.add("opacity-0"); }, 2500);
             }
         }
 
-        // 📥 রিয়েল-টাইম ফায়ারবেস ডাটাবেজ লিসেনারস
-        function initAppDatabaseListeners() {
-            // ১. ফিচার্ড ম্যাচ লিসেনার
-            database.ref("featuredMatch").on("value", snap => {
-                if(!snap.exists()) return;
-                const data = snap.val();
-                document.getElementById("featured-match").innerHTML = `
-                    <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-5 rounded-2xl shadow-xl relative overflow-hidden">
-                        <div class="absolute right-0 bottom-0 opacity-10 text-6xl translate-x-3 translate-y-3"><i class="fa-solid fa-star"></i></div>
-                        <span class="text-[9px] font-black bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-wider">🔥 FEATURED MATCH</span>
-                        <h2 class="text-lg font-black text-white mt-3 tracking-tight">${data.title}</h2>
-                        <p class="text-green-100 mt-1.5 text-xs font-medium">🏆 ${data.league}</p>
-                        <p class="text-green-100 text-xs font-semibold mt-0.5">⏰ ${data.time}</p>
-                    </div>
-                `;
-            });
+        const ADMIN_EMAIL = "949arafathossain@gmail.com";
+        const ADMIN_PASS = "Arafat00#";
 
-            // ২. রিয়েল-টাইম লাইভ স্কোরবোর্ড + ডাইনামিক গোল এলার্ট নোটিফিকেশন লজিক
-            database.ref('scores').on('value', snap => {
-                const box = document.getElementById('live-score-box');
-                box.innerHTML = '';
-                if(!snap.exists()) return;
+        function triggerUIRefresh(user) {
+            const adminPanelSecure = document.getElementById("admin-panel-secure");
+            const adminDeniedMessage = document.getElementById("admin-denied-message");
+            const authArea = document.getElementById("auth-area");
+            const clearBtn = document.getElementById("admin-clear-votes");
+
+            if (isLocalAdminOverride || localStorage.getItem("sporto_admin_session") === "active" || (user && user.email === ADMIN_EMAIL)) {
+                if(adminPanelSecure) adminPanelSecure.classList.remove("hidden");
+                if(adminDeniedMessage) adminDeniedMessage.classList.add("hidden");
+                if(clearBtn) clearBtn.classList.remove("hidden");
+                if(authArea) {
+                    authArea.innerHTML = `
+                        <button onclick="handleLogout()" class="bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1.5 text-xs font-bold rounded-xl active:scale-95 transition-all">Logout</button>
+                    `;
+                }
+            } else if (user) {
+                if(adminPanelSecure) adminPanelSecure.classList.add("hidden");
+                if(adminDeniedMessage) adminDeniedMessage.classList.remove("hidden");
+                if(clearBtn) clearBtn.classList.add("hidden");
+                if(authArea) {
+                    authArea.innerHTML = `
+                        <button onclick="handleLogout()" class="bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1.5 text-xs font-bold rounded-xl active:scale-95 transition-all">Logout</button>
+                    `;
+                }
+            } else {
+                if(adminPanelSecure) adminPanelSecure.classList.add("hidden");
+                if(adminDeniedMessage) adminDeniedMessage.classList.remove("hidden");
+                if(clearBtn) clearBtn.classList.add("hidden");
+                if(authArea) {
+                    authArea.innerHTML = `
+                        <button onclick="openAuthModal()" class="bg-amber-500 text-zinc-950 font-bold text-xs px-3.5 py-2 rounded-xl active:scale-95 transition-all">Sign In</button>
+                    `;
+                }
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            triggerUIRefresh(user);
+        });
+
+        const authForm = document.getElementById("auth-form-element");
+        if(authForm) {
+            authForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = document.getElementById("auth-email").value.trim();
+                const password = document.getElementById("auth-password").value;
                 
-                snap.forEach(child => {
-                    const d = child.val();
-                    const key = child.key;
-
-                    // ডাইনামিক ম্যাচ রেজাল্ট ব্যাজ কালার লজিক (LIVE = Red, FT = Green)
-                    let isFT = d.status && d.status.toUpperCase() === "FT";
-                    let statusColor = isFT ? "bg-green-600 animate-none" : "bg-red-600 animate-pulse";
-
-                    // গোল চেকার ট্রিগার অ্যালার্ট (যদি স্কোর পরিবর্তিত হয় এবং এটি ফার্স্ট লোড না হয়)
-                    if (!firstLoadScores && scoreCache[key] && scoreCache[key] !== d.score) {
-                        playGoalSound();
-                        showAlert("GOAL ALERT ⚽", `${d.home} ${d.score} ${d.away} (${d.status || 'LIVE'})`);
+                if(isLoginMode) {
+                    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
+                        isLocalAdminOverride = true;
+                        localStorage.setItem("sporto_admin_session", "active");
+                        closeAuthModal();
+                        triggerUIRefresh(null);
+                        showAlert("Welcome Back, Admin Arafat!");
+                        return;
                     }
-                    scoreCache[key] = d.score;
 
-                    box.innerHTML += `
-                        <div class="bg-white/5 border border-white/5 p-3.5 rounded-xl flex items-center justify-between">
-                            <div class="flex items-center gap-2 min-w-0 flex-1">
-                                <span class="${statusColor} text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">
-                                    ${d.status || "LIVE"}
-                                </span>
-                                <p class="text-xs font-bold text-white truncate">${d.home} <span class="text-amber-500 bg-black/40 px-2 py-0.5 rounded-md mx-1 font-black">${d.score}</span> ${d.away}</p>
-                            </div>
-                            <i class="fa-solid fa-chart-line text-amber-500 text-xs"></i>
+                    signInWithEmailAndPassword(auth, email, password)
+                        .then(() => { closeAuthModal(); showAlert("Welcome Back!"); })
+                        .catch((err) => showAlert("Login Failed: " + err.message));
+                } else {
+                    createUserWithEmailAndPassword(auth, email, password)
+                        .then(() => { closeAuthModal(); showAlert("Account Created!"); })
+                        .catch((err) => showAlert("Registration Failed: " + err.message));
+                }
+            });
+        }
+
+        // =============================================================
+        // REAL-TIME CORE ENGINES & DATA MUTATIONS (FIXED BUTTONS)
+        // =============================================================
+
+        // 1. Breaking News Update
+        const btnUpdateBreaking = document.getElementById("btn-update-breaking");
+        if(btnUpdateBreaking) {
+            btnUpdateBreaking.addEventListener("click", () => {
+                const txt = document.getElementById("adm-breaking-text").value.trim();
+                if(txt) {
+                    set(ref(database, "breakingNews"), txt).then(() => { 
+                        showAlert("Ticker Updated."); 
+                        document.getElementById("adm-breaking-text").value = ""; 
+                    });
+                } else {
+                    showAlert("Please type a news headline first!");
+                }
+            });
+        }
+        onValue(ref(database, "breakingNews"), (snap) => {
+            const ticker = document.getElementById("breaking-ticker-text");
+            if(ticker && snap.exists()) ticker.innerText = snap.val();
+        });
+
+        // 2. Live Match Dashboard Update
+        const btnUpdateScore = document.getElementById("btn-update-score");
+        if(btnUpdateScore) {
+            btnUpdateScore.addEventListener("click", () => {
+                const title = document.getElementById("score-match-title").value.trim();
+                const score = document.getElementById("score-current").value.trim();
+                const status = document.getElementById("score-status").value.trim();
+                const stream = document.getElementById("score-stream").value.trim();
+                if(title && score && status) {
+                    set(ref(database, "liveMatch"), { title, score, status, streamUrl: stream })
+                        .then(() => showAlert("Live Match Updated Server-side!"));
+                } else {
+                    showAlert("Please fill out Title, Score and Status!");
+                }
+            });
+        }
+
+        const btnClearLive = document.getElementById("btn-clear-live");
+        if(btnClearLive) {
+            btnClearLive.addEventListener("click", () => {
+                remove(ref(database, "liveMatch")).then(() => {
+                    showAlert("Live match node removed.");
+                    document.getElementById("score-match-title").value = "";
+                    document.getElementById("score-current").value = "";
+                    document.getElementById("score-status").value = "";
+                    document.getElementById("score-stream").value = "";
+                });
+            });
+        }
+
+        onValue(ref(database, "liveMatch"), (snap) => {
+            const data = snap.val();
+            const homeScore = document.getElementById("home-live-score");
+            const playerWrapper = document.getElementById("live-player-wrapper");
+
+            if(homeScore) {
+                if(data && data.title) {
+                    homeScore.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">${data.status}</span>
+                            <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Live Network</span>
+                        </div>
+                        <div class="mt-3 flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-zinc-200">${data.title}</h4>
+                            <span class="text-lg font-black text-amber-500 bg-zinc-950 px-3 py-1 rounded-xl border border-zinc-900">${data.score}</span>
+                        </div>
+                    `;
+                    
+                    if(data.streamUrl && playerWrapper) {
+                        playerWrapper.classList.remove("hidden");
+                        player.src({ type: 'application/x-mpegURL', src: data.streamUrl });
+                    } else if (playerWrapper) {
+                        playerWrapper.classList.add("hidden");
+                    }
+                } else {
+                    homeScore.innerHTML = `<p class="text-center text-xs text-zinc-600 py-2">No active matches live right now.</p>`;
+                    if(playerWrapper) playerWrapper.classList.add("hidden");
+                }
+            }
+        });
+
+        // 3. Upcoming Matches Engine
+        const btnAddUpcoming = document.getElementById("btn-add-upcoming");
+        if(btnAddUpcoming) {
+            btnAddUpcoming.addEventListener("click", () => {
+                const title = document.getElementById("up-match-title").value.trim();
+                const time = document.getElementById("up-match-time").value.trim();
+                if(title && time) {
+                    push(ref(database, "upcomingMatches"), { title, time }).then(() => {
+                        showAlert("Upcoming Match Added!");
+                        document.getElementById("up-match-title").value = "";
+                        document.getElementById("up-match-time").value = "";
+                    }).catch(err => showAlert("Error: " + err.message));
+                } else {
+                    showAlert("Fill out all upcoming details!");
+                }
+            });
+        }
+
+        onValue(ref(database, "upcomingMatches"), (snap) => {
+            const target = document.getElementById("home-upcoming-list");
+            if(!target) return;
+            if(snap.exists()) {
+                let html = "";
+                const data = snap.val();
+                Object.keys(data).forEach(key => {
+                    html += `
+                        <div class="bg-zinc-950 border border-zinc-900 rounded-xl p-3 flex items-center justify-between">
+                            <span class="text-xs font-bold text-zinc-300">${data[key].title}</span>
+                            <span class="text-[10px] bg-zinc-900 border border-zinc-800 text-amber-500 font-bold px-2 py-1 rounded-lg">${data[key].time}</span>
                         </div>
                     `;
                 });
-                firstLoadScores = false;
-            });
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = `<p class="text-center text-xs text-zinc-600 py-2">No upcoming fixtures scheduled.</p>`;
+            }
+        });
 
-            // ৩. লাইভ স্ট্রিমিং ম্যাচ গ্রিড
-            database.ref('matches').on('value', snap => {
-                const grid = document.getElementById('matches-grid');
-                grid.innerHTML = '';
-                if(!snap.exists()) {
-                    grid.innerHTML = `<div class="text-center py-2 text-zinc-600 text-xs">No active matches streaming now.</div>`;
-                    return;
+        // 4. Finished Match Results Engine
+        const btnAddFinished = document.getElementById("btn-add-finished");
+        if(btnAddFinished) {
+            btnAddFinished.addEventListener("click", () => {
+                const title = document.getElementById("fin-match-title").value.trim();
+                const score = document.getElementById("fin-match-score").value.trim();
+                if(title && score) {
+                    push(ref(database, "finishedMatches"), { title, score, status: "FT" }).then(() => {
+                        showAlert("Result Logs Synchronized!");
+                        document.getElementById("fin-match-title").value = "";
+                        document.getElementById("fin-match-score").value = "";
+                    }).catch(err => showAlert("Error: " + err.message));
+                } else {
+                    showAlert("Fill out title and score fields!");
                 }
-                snap.forEach(child => {
-                    const match = child.val();
-                    grid.innerHTML += `
-                        <div onclick="selectMatch('${match.title}', '${match.streamUrl}', true)" class="bg-white/5 border border-white/5 hover:border-amber-500/40 p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all">
-                            <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div class="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center text-xs font-black shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
-                                <div class="min-w-0 flex-1">
-                                    <h4 class="font-bold text-white text-xs truncate">${match.title}</h4>
-                                    <p class="text-[10px] text-zinc-400 mt-0.5 truncate">${match.details || 'Click to watch free'}</p>
+            });
+        }
+
+        onValue(ref(database, "finishedMatches"), (snap) => {
+            const scoreCenter = document.getElementById("score-center-target");
+            if(!scoreCenter) return;
+            
+            onValue(ref(database, "liveMatch"), (liveSnap) => {
+                let html = "";
+                const liveData = liveSnap.val();
+                
+                if(liveData && liveData.title) {
+                    html += `
+                        <div class="bg-zinc-900 border border-red-500/30 p-4 rounded-xl shadow-lg relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-red-600 text-white font-black text-[8px] px-2 py-0.5 uppercase tracking-wider animate-pulse rounded-bl">LIVE</div>
+                            <h4 class="text-xs font-bold text-zinc-200 mb-1">${liveData.title}</h4>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-lg font-black text-amber-500">${liveData.score}</span>
+                                <span class="text-[10px] text-zinc-500 font-bold">${liveData.status}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if(snap.exists()) {
+                    const data = snap.val();
+                    Object.keys(data).forEach(key => {
+                        html += `
+                            <div class="bg-zinc-950 border border-zinc-900 p-4 rounded-xl">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h4 class="text-xs font-bold text-zinc-300">${data[key].title}</h4>
+                                    <span class="bg-zinc-900 text-zinc-500 text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">${data[key].status || 'FT'}</span>
+                                </div>
+                                <div class="mt-2 text-md font-black text-zinc-400">${data[key].score}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                if(!liveData && !snap.exists()) {
+                    html = `<p class="text-center text-xs text-zinc-600 py-6">All match logs empty.</p>`;
+                }
+                
+                scoreCenter.innerHTML = html;
+            }, { onlyOnce: true });
+        });
+
+        // =============================================================
+        // HIGHLIGHTS MODULE ENGINE
+        // =============================================================
+        window.playHighlight = function(url) {
+            if(!url) return;
+            const playerWrapper = document.getElementById("live-player-wrapper");
+            if(playerWrapper) {
+                playerWrapper.classList.remove("hidden");
+                playerWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            player.src({ type: 'application/x-mpegURL', src: url });
+            player.play();
+            showAlert("Playing Highlight...");
+        };
+
+        onValue(ref(database, "highlights"), (snap) => {
+            const homePreview = document.getElementById("home-highlights-preview");
+            const fullGrid = document.getElementById("full-highlights-grid");
+            if(!homePreview || !fullGrid) return;
+
+            if (snap.exists()) {
+                const data = snap.val();
+                let homeHTML = "";
+                let gridHTML = "";
+
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    const title = item.title || "Match Highlight";
+                    const thumbnail = item.thumbnail || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop";
+                    const videoUrl = item.videoUrl || item.streamUrl || "";
+
+                    homeHTML += `
+                        <div onclick="playHighlight('${videoUrl}')" class="min-w-[180px] w-[180px] bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden snap-start cursor-pointer active:scale-95 transition-all flex-shrink-0 group">
+                            <div class="aspect-video w-full bg-zinc-900 relative">
+                                <img src="${thumbnail}" alt="${title}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-8 h-8 bg-amber-500/90 text-black rounded-full flex items-center justify-center text-xs pl-0.5 shadow-lg"><i class="fa-solid fa-play"></i></div>
                                 </div>
                             </div>
-                            <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Watch Live</span>
-                        </div>
-                    `;
-                });
-            });
-
-            // ৪. আপকামিং ম্যাচ শিডিউল
-            database.ref('upcoming').on('value', snap => {
-                const grid = document.getElementById('upcoming-grid');
-                grid.innerHTML = '';
-                if(!snap.exists()) {
-                    grid.innerHTML = `<p class="text-center py-2 text-zinc-600 text-xs">No upcoming matches scheduled.</p>`;
-                    return;
-                }
-                snap.forEach(child => {
-                    const d = child.val();
-                    const key = child.key;
-                    grid.innerHTML += `
-                        <div class="bg-[#1f2833] border border-zinc-800 rounded-xl p-3 flex justify-between items-center">
-                            <div class="min-w-0 flex-1 pr-2">
-                                <h4 class="text-white font-bold text-xs truncate">${d.title}</h4>
-                                <p id="countdown-${key}" class="text-amber-500 font-bold text-[10px] mt-1">Calculating...</p>
+                            <div class="p-2">
+                                <p class="text-[11px] font-bold text-zinc-300 line-clamp-2">${title}</p>
                             </div>
-                            <span class="text-[9px] text-zinc-400 bg-black/30 px-2 py-1 rounded shrink-0 border border-white/5">${d.date} • ${d.time}</span>
                         </div>
                     `;
-                    setTimeout(() => startScheduleCountdown(`countdown-${key}`, `${d.date}T${d.time}`), 100);
-                });
-            });
 
-            // ৫. ম্যাচ হাইলাইটস ক্যাশে রেন্ডারার
-            database.ref('highlights').on('value', snap => {
-                allHighlights = [];
-                if(snap.exists()) {
-                    snap.forEach(child => { allHighlights.push(child.val()); });
-                }
-                loadHighlights(document.getElementById('category-filter').value || 'All');
-            });
-
-            // ৬. ফুটবল নিউজ রিড
-            database.ref("news").on("value", snap=>{
-                let html='';
-                if(!snap.exists()) {
-                    document.getElementById("news-grid").innerHTML = `<p class="text-center py-2 text-zinc-600 text-xs">No news available.</p>`;
-                    return;
-                }
-                snap.forEach(child=>{
-                    const d=child.val();
-                    html += `
-                        <div class="bg-[#1f2833] p-3.5 rounded-xl border border-zinc-800">
-                            <h4 class="text-white font-bold text-xs tracking-tight">📰 ${d.title}</h4>
-                            <p class="text-zinc-400 text-[11px] mt-1.5 leading-relaxed">${d.description}</p>
+                    gridHTML += `
+                        <div onclick="playHighlight('${videoUrl}')" class="bg-zinc-950 border border-zinc-900 rounded-xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-98 transition-all group">
+                            <div class="w-24 aspect-video bg-zinc-900 rounded-lg overflow-hidden relative flex-shrink-0">
+                                <img src="${thumbnail}" alt="${title}" class="w-full h-full object-cover opacity-75">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-6 h-6 bg-amber-500 text-black rounded-full flex items-center justify-center text-[10px] pl-0.5"><i class="fa-solid fa-play"></i></div>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-zinc-200 line-clamp-2 group-hover:text-amber-500 transition-all">${title}</h4>
+                                <span class="text-[9px] text-zinc-600 font-medium block mt-1"><i class="fa-regular fa-clock mr-1"></i>Available Now</span>
+                            </div>
                         </div>
                     `;
                 });
-                document.getElementById("news-grid").innerHTML = html;
-            });
-        }
 
-        // ক্যাটাগরি অনুযায়ী ফিল্টারড হাইলাইটস
-        function loadHighlights(filterCategory) {
-            const grid = document.getElementById('highlights-grid');
-            grid.innerHTML = '';
-            const filtered = allHighlights.filter(hl => {
-                if(filterCategory === 'All') return true;
-                return hl.category && hl.category.toLowerCase().includes(filterCategory.toLowerCase());
-            });
-            if(filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-4 text-zinc-600 text-xs">No highlights available.</div>`;
+                homePreview.innerHTML = homeHTML;
+                fullGrid.innerHTML = gridHTML;
+            } else {
+                homePreview.innerHTML = `<p class="text-center text-xs text-zinc-600 py-2 w-full">No recent highlights available.</p>`;
+                fullGrid.innerHTML = `<p class="text-center text-xs text-zinc-600 py-6">No media archives found.</p>`;
+            }
+        });
+
+        // =============================================================
+        // FAN ZONE VOTING COMPONENT
+        // =============================================================
+        let currentPollData = {};
+        onValue(ref(database, "polls"), (snap) => {
+            currentPollData = snap.val() || {};
+            renderPollProgress();
+        });
+
+        window.voteTeam = function(newTeam) {
+            const previousVote = localStorage.getItem("sporto_voted_team");
+            if (previousVote === newTeam) {
+                showAlert(`You already voted for ${newTeam}!`);
                 return;
             }
-            filtered.forEach(hl => {
-                grid.innerHTML += `
-                    <div class="bg-white/5 border border-white/5 rounded-xl overflow-hidden flex flex-col justify-between shadow-md">
-                       <div class="relative aspect-video bg-zinc-900 w-full overflow-hidden">
-                           <img src="${hl.thumbnail || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400'}" class="w-full h-full object-cover opacity-80" alt="thumb">
-                           <span class="absolute top-1 left-1 bg-black/60 text-[8px] font-bold text-cyan-400 px-1 py-0.5 rounded uppercase tracking-tight">${hl.category || 'Replay'}</span>
-                       </div>
-                       <div class="p-2 space-y-1.5">
-                           <h4 class="font-bold text-white text-[10px] line-clamp-1 leading-tight">${hl.title}</h4>
-                           <button onclick="selectMatch('${hl.title}', '${hl.streamUrl}', false)" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-1 rounded-lg text-[9px] cursor-pointer transition-all">Watch Replay</button>
-                       </div>
-                    </div>
-                `;
-            });
-        }
 
-        // আপকামিং শিডিউল টাইমার লজিক
-        function startScheduleCountdown(id, targetStr) {
-            if(countdownIntervals[id]) clearInterval(countdownIntervals[id]);
-            function update() {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const distance = new Date(targetStr).getTime() - Date.now();
-                if (distance < 0) { el.innerText = "⚽ Match Live"; clearInterval(countdownIntervals[id]); return; }
-                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                el.innerText = `⏳ ${d}d ${h}h remaining`;
-            }
-            update(); countdownIntervals[id] = setInterval(update, 60000);
-        }
-
-        // ইনস্ট্যান্ট নোটিফিকেশন পপআপ ইঞ্জিন
-        function showAlert(title, msg){
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <div class="fixed top-5 right-5 left-5 max-w-sm mx-auto bg-gradient-to-r from-green-600 to-emerald-700 text-white p-3.5 rounded-xl z-50 shadow-2xl border border-white/20 flex items-start gap-2.5 animate-bounce">
-                    <div class="bg-white/20 w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-bell"></i></div>
-                    <div class="min-w-0 flex-1">
-                        <h3 class="font-black text-[11px] uppercase tracking-wide text-yellow-300">${title}</h3>
-                        <p class="text-[10px] font-medium mt-0.5 text-white/90">${msg}</p>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(div); setTimeout(() => { div.remove(); }, 5000);
-        }
-
-        // 👑 অ্যাডমিন রাইট মেথড সমূহ
-        function submitLiveMatch() {
-            const title = document.getElementById('adm-live-title').value.trim();
-            const details = document.getElementById('adm-live-details').value.trim();
-            const url = document.getElementById('adm-live-url').value.trim();
-            if(!title || !url) return alert("Missing Title or URL");
-            database.ref('matches').push({ title, details, streamUrl: url }).then(() => { showAlert("LIVE UPDATED", "🔴 Stream pushed!"); resetFields(['adm-live-title', 'adm-live-details', 'adm-live-url']); });
-        }
-
-        function submitFeaturedMatch() {
-            const title = document.getElementById('adm-feat-title').value.trim();
-            const league = document.getElementById('adm-feat-league').value.trim();
-            const time = document.getElementById('adm-feat-time').value.trim();
-            if(!title || !league || !time) return alert("Fill all fields");
-            database.ref('featuredMatch').set({ title, league, time }).then(() => { showAlert("FEATURED UPDATE", "🔥 Featured match updated!"); resetFields(['adm-feat-title', 'adm-feat-league', 'adm-feat-time']); });
-        }
-
-        function submitUpcomingMatch() {
-            const title = document.getElementById('adm-up-title').value.trim();
-            const date = document.getElementById('adm-up-date').value;
-            const time = document.getElementById('adm-up-time').value;
-            if(!title || !date || !time) return alert("Provide metadata");
-            database.ref('upcoming').push({ title, date, time }).then(() => { showAlert("SCHEDULED", "📅 Schedule added!"); resetFields(['adm-up-title', 'adm-up-date', 'adm-up-time']); });
-        }
-
-        function submitLiveScore() {
-            const home = document.getElementById('adm-sc-home').value.trim();
-            const score = document.getElementById('adm-sc-score').value.trim();
-            const away = document.getElementById('adm-sc-away').value.trim();
-            const status = document.getElementById('adm-sc-status').value.trim();
-            if(!home || !score || !away) return alert("Provide scores");
-            database.ref('scores').push({ home, score, away, status: status || 'LIVE' }).then(() => { resetFields(['adm-sc-home', 'adm-sc-score', 'adm-sc-away', 'adm-sc-status']); });
-        }
-
-        function submitHighlight() {
-            const title = document.getElementById('adm-hl-title').value.trim();
-            const category = document.getElementById('adm-hl-category').value.trim();
-            const thumbnail = document.getElementById('adm-hl-thumb').value.trim();
-            const url = document.getElementById('adm-hl-url').value.trim();
-            if(!title || !url || !category) return alert("Missing fields");
-            database.ref('highlights').push({ title, category, thumbnail, streamUrl: url }).then(() => { showAlert("HIGHLIGHT SAVED", `🎬 Saved under ${category}`); resetFields(['adm-hl-title', 'adm-hl-category', 'adm-hl-thumb', 'adm-hl-url']); });
-        }
-
-        function submitNews() {
-            const title = document.getElementById('adm-ns-title').value.trim();
-            const desc = document.getElementById('adm-ns-desc').value.trim();
-            if(!title || !desc) return alert("Fill headline & description");
-            database.ref('news').push({ title, description: desc }).then(() => { showAlert("NEWS FLASHED", "📰 Published successfully!"); resetFields(['adm-ns-title', 'adm-ns-desc']); });
-        }
-
-        function resetFields(ids) { ids.forEach(id => document.getElementById(id).value = ''); }
-
-        // 📺 ফ্রি ভিডিও স্ট্রিমিং অ্যাকশন (লগইন রিকোয়ারমেন্ট রিমুভড)
-        function playStreamSource(url) {
-            const video = document.getElementById('video-player');
-            if (Hls.isSupported() && url.includes('.m3u8')) {
-                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
-            } else {
-                video.src = url;
-                video.addEventListener('loadedmetadata', () => video.play().catch(()=>{}));
-            }
-        }
-
-        function selectMatch(name, url, isLive) {
-            document.getElementById('current-match-title').innerText = name;
-            const badge = document.getElementById('player-live-badge');
-            const watchingText = document.getElementById('live-watching-text');
-            
-            if(isLive) {
-                badge.className = "bg-red-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase animate-pulse";
-                badge.innerText = "LIVE";
-                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Live Stadium View`;
-            } else {
-                badge.className = "bg-cyan-600 text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase";
-                badge.innerText = "🎬 REPLAY";
-                watchingText.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Highlights Replay View`;
+            const updates = {};
+            if (previousVote) {
+                const prevCount = currentPollData[previousVote] || 0;
+                updates[`polls/${previousVote}`] = prevCount > 0 ? prevCount - 1 : 0;
             }
 
-            document.getElementById('homepage-section').classList.add('hidden');
-            document.getElementById('streaming-section').classList.remove('hidden');
-            playStreamSource(url);
-        }
+            const newCount = currentPollData[newTeam] || 0;
+            updates[`polls/${newTeam}`] = newCount + 1;
 
-        function showHomepage() {
-            document.getElementById('homepage-section').classList.remove('hidden');
-            document.getElementById('streaming-section').classList.add('hidden');
-            document.getElementById('video-player').pause();
-        }
+            update(ref(database), updates)
+                .then(() => {
+                    localStorage.setItem("sporto_voted_team", newTeam);
+                    updateSelectedBadge(newTeam);
+                    showAlert(previousVote ? `Vote switched to ${newTeam}!` : `Voted for ${newTeam}!`);
+                })
+                .catch(() => showAlert("Voting failed!"));
+        };
 
-        // 📲 চ্যাট বাটনের জন্য নেভিগেশনাল হ্যান্ডলার
-        document.getElementById('nav-chat-btn').addEventListener('click', function(e) {
-            const streamingSection = document.getElementById('streaming-section');
-            if (streamingSection.classList.contains('hidden')) {
-                e.preventDefault();
-                // যদি কোনো ম্যাচ সিলেক্ট করা না থাকে, ডেমো হিসেবে চ্যাট অন করতে ফাস্ট লাইভ স্ট্রিম বা নো ম্যাচ ডাটা দিয়ে ভিউ চেঞ্জ করা হবে
-                document.getElementById('homepage-section').classList.add('hidden');
-                streamingSection.classList.remove('hidden');
-                document.getElementById('chat-section-anchor').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-
-        // 🔐 অথেনটিকেশন ইঞ্জিন (শুধু কমেন্ট পোস্ট করার জন্য প্রয়োজনীয়)
-        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-        
-        function switchAuthTab(type) {
-            authTab = type;
-            if(type === 'email') {
-                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer";
-                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer";
-                document.getElementById('form-email').classList.remove('hidden');
-                document.getElementById('form-phone').classList.add('hidden');
-            } else {
-                document.getElementById('tab-phone').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold bg-amber-500 text-black cursor-pointer";
-                document.getElementById('tab-email').className = "flex-1 py-1.5 rounded-md text-[10px] font-bold text-zinc-400 cursor-pointer";
-                document.getElementById('form-phone').classList.remove('hidden');
-                document.getElementById('form-email').classList.add('hidden');
-            }
-        }
-        
-        function toggleModalMode() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('modal-title').innerText = isSignUpMode ? "Register Fan Account" : "Join the Fan Chat";
-            document.getElementById('modal-submit-btn').innerText = isSignUpMode ? "Create Account" : "Sign In";
-            document.getElementById('modal-toggle-desc').innerText = isSignUpMode ? "Have an account?" : "Don't have an account?";
-            document.getElementById('modal-toggle-btn').innerText = isSignUpMode ? "Login" : "Register";
-        }
-
-        function submitAuth() {
-            if (authTab === 'email') {
-                const email = document.getElementById('email-input').value.trim();
-                const pass = document.getElementById('password-input').value;
-                if(!email || !pass) return alert("Fill up identity fields.");
-                if(isSignUpMode) auth.createUserWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
-                else auth.signInWithEmailAndPassword(email, pass).then(()=>closeAuthModal()).catch(e => alert(e.message));
-            } else {
-                const phone = document.getElementById('phone-input').value.trim();
-                const pass = document.getElementById('phone-password-input').value;
-                if(!phone || !pass) return alert("Fill up mobile credentials.");
-                const generatedFakeEmail = `phone_880${phone}@sportolive.com`;
-                if(isSignUpMode) auth.createUserWithEmailAndPassword(generatedFakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Account exists or error occurred."));
-                else auth.signInWithEmailAndPassword(generatedFakeEmail, pass).then(()=>closeAuthModal()).catch(e => alert("Invalid phone credentials."));
-            }
-        }
-
-        function logout() { auth.signOut(); }
-
-        auth.onAuthStateChanged(user => {
-            const profileZone = document.getElementById('user-profile-zone');
-            const commentArea = document.getElementById('comment-action-area');
-            const adminPanel = document.getElementById('admin-panel-section');
-            
-            if (user) {
-                currentUser = user;
-                let displayIdentity = user.email.includes('phone_') ? user.email.replace('phone_880', '📱 ').split('@')[0] : user.email.split('@')[0];
-                profileZone.innerHTML = `
-                    <span class="text-[10px] font-bold text-zinc-300 border border-white/10 bg-white/5 px-2 py-1 rounded-full truncate flex-1 min-w-0" title="${displayIdentity}">${displayIdentity}</span>
-                    <button onclick="logout()" class="text-[9px] bg-red-600/10 border border-red-500/20 text-red-500 px-2 py-1 rounded-lg font-bold cursor-pointer shrink-0">Exit</button>
-                `;
-                commentArea.innerHTML = `
-                    <div class="flex gap-1.5">
-                        <input type="text" id="comment-text" placeholder="Type friendly banter..." class="flex-1 p-2 bg-black/50 rounded-xl border border-white/10 text-white text-xs focus:outline-none">
-                        <button onclick="sendComment()" class="bg-amber-500 text-black px-3.5 font-extrabold rounded-xl text-xs cursor-pointer"><i class="fa-regular fa-paper-plane"></i></button>
-                    </div>
-                `;
-                if (user.email === "949arafathossain@gmail.com") adminPanel.classList.remove('hidden');
-                else adminPanel.classList.add('hidden');
-            } else {
-                currentUser = null; adminPanel.classList.add('hidden');
-                profileZone.innerHTML = `<button onclick="openAuthModal()" class="text-xs bg-amber-500 text-black px-3 py-1.5 rounded-xl font-black cursor-pointer">Login</button>`;
-                commentArea.innerHTML = `
-                    <div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl text-center">
-                        <p class="text-[10px] text-amber-400 font-bold mb-1.5">💬 Want to join the live community chat?</p>
-                        <button onclick="openAuthModal()" class="bg-amber-500 text-black font-black text-[10px] px-3 py-1 rounded-md cursor-pointer">Login to Chat</button>
-                    </div>
-                `;
-            }
-            loadComments();
-        });
-
-        function sendComment() {
-            const text = document.getElementById('comment-text').value;
-            if(!text.trim() || !currentUser) return;
-            let name = currentUser.email.includes('phone_') ? currentUser.email.replace('phone_880', '').split('@')[0] : currentUser.email.split('@')[0];
-            database.ref('comments').push({ username: name, text: text, timestamp: Date.now(), role: currentUser.email === "949arafathossain@gmail.com" ? "Admin" : "User" });
-            document.getElementById('comment-text').value = '';
-        }
-
-        function loadComments() {
-            database.ref('comments').limitToLast(35).on('value', snapshot => {
-                const box = document.getElementById('chat-box');
-                if(!box) return; box.innerHTML = '';
-                snapshot.forEach(child => {
-                    const d = child.val();
-                    const isAdm = d.role === "Admin";
-                    box.innerHTML += `
-                        <div class="p-2 rounded-lg bg-white/5 border-l-2 ${isAdm ? 'border-amber-500 bg-amber-500/5' : 'border-white/10'}">
-                            <span class="text-[9px] ${isAdm ? 'text-amber-500 font-black' : 'text-zinc-400 font-bold'}">${d.username} ${isAdm ? '👑' : ''}</span>
-                            <p class="text-zinc-200 text-xs mt-0.5">${d.text}</p>
-                        </div>
-                    `;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        // ফ্যান ভিউয়ার সিমুলেটর
-        setInterval(() => {
-            const el = document.getElementById('view-counter');
-            if(el) el.innerText = (Math.floor(Math.random() * (1600 - 1100 + 1)) + 1100).toLocaleString();
-        }, 5000);
-
-        // 🏆 SECTION 1: FIFA WORLD CUP COUNTDOWN
-        function startCountdown(){
-            const target = new Date("2026-06-11").getTime();
-            setInterval(()=>{
-                const diff = target - Date.now();
-                const days = Math.floor(diff/(1000*60*60*24));
-                const box = document.getElementById("countdown-box");
-                if(box){
-                    box.innerHTML = `
-                        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shadow-lg text-black">
-                            <div class="absolute right-0 bottom-0 opacity-15 text-7xl translate-x-4 translate-y-4"><i class="fa-solid fa-futbol"></i></div>
-                            <h2 class="text-base font-black mb-0.5 text-white tracking-tight uppercase">🏆 FIFA WORLD CUP 2026</h2>
-                            <p class="text-[20px] font-black text-white tracking-wider">${days} Days Left <span class="text-xs font-medium text-amber-100">until kick-off</span></p>
-                        </div>
-                    `;
+        function updateSelectedBadge(selectedTeam) {
+            const teamsList = ['Brazil', 'Argentina', 'Spain', 'France', 'Germany', 'Portugal', 'Italy', 'Netherlands'];
+            teamsList.forEach(t => {
+                const btn = document.getElementById(`btn-vote-${t}`);
+                const badge = document.getElementById(`badge-${t}`);
+                if (btn && badge) {
+                    if (t === selectedTeam) {
+                        btn.classList.add("border-amber-500", "bg-amber-500/10");
+                        badge.classList.remove("hidden");
+                    } else {
+                        btn.classList.remove("border-amber-500", "bg-amber-500/10");
+                        badge.classList.add("hidden");
+                    }
                 }
-            },1000);
+            });
         }
 
-        initAppDatabaseListeners();
-        startCountdown();
+        function renderPollProgress() {
+            const teamsList = ['Brazil', 'Argentina', 'Spain', 'France', 'Germany', 'Portugal', 'Italy', 'Netherlands'];
+            let total = teamsList.reduce((acc, t) => acc + (currentPollData[t] || 0), 0) || 0;
+
+            const resTarget = document.getElementById("poll-progress-results");
+            if (!resTarget) return;
+            resTarget.innerHTML = "";
+
+            const flags = { Brazil:'🇧🇷', Argentina:'🇦🇷', Spain:'🇪🇸', France:'🇫🇷', Germany:'🇩🇪', Portugal:'🇵🇹', Italy:'🇮🇹', Netherlands:'🇳🇱' };
+            const colors = { Brazil:'bg-yellow-500', Argentina:'bg-sky-500', Spain:'bg-red-500', France:'bg-blue-600', Germany:'bg-zinc-400', Portugal:'bg-red-600', Italy:'bg-green-600', Netherlands:'bg-orange-500' };
+
+            const activeLocalVote = localStorage.getItem("sporto_voted_team");
+            if(activeLocalVote) updateSelectedBadge(activeLocalVote);
+
+            teamsList.forEach(t => {
+                let votes = currentPollData[t] || 0;
+                let pct = total > 0 ? Math.round((votes / total) * 100) : 0;
+                resTarget.innerHTML += `
+                    <div class="text-xs">
+                        <div class="flex justify-between font-bold mb-1">
+                            <span>${flags[t]} ${t}</span>
+                            <span class="text-zinc-400">${pct}% (${votes})</span>
+                        </div>
+                        <div class="bg-zinc-900 border border-zinc-800/40 h-2 rounded-full overflow-hidden">
+                            <div class="${colors[t]} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        const clearVotesBtn = document.getElementById("admin-clear-votes");
+        if(clearVotesBtn) {
+            clearVotesBtn.addEventListener("click", () => {
+                if(confirm("Are you sure you want to completely reset all poll votes to 0?")) {
+                    const freshPolls = { Brazil: 0, Argentina: 0, Spain: 0, France: 0, Germany: 0, Portugal: 0, Italy: 0, Netherlands: 0 };
+                    set(ref(database, "polls"), freshPolls).then(() => {
+                        localStorage.removeItem("sporto_voted_team");
+                        updateSelectedBadge(null);
+                        showAlert("All database vote counts cleared successfully!");
+                    });
+                }
+            });
+        }
+
+        // Initialize Session Check
+        triggerUIRefresh(null);
     </script>
 </body>
 </html>
